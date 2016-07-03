@@ -11,8 +11,10 @@ If you want to read the library name aloud, try "say-mel" :)
 ## Contents
 
 * [Perceptron](src/main/scala/saiml/nn/perceptron)
+([tests](src/test/scala/saiml/nn/perceptron))
 A single layer, single node granddaddy of neural networks.
 * [Backprop](src/main/scala/saiml/nn/backprop)
+([tests](src/test/scala/saiml/nn/backprop))
 A neural network with one hidden layer, using backpropagation.
 
 ## License
