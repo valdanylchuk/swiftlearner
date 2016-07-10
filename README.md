@@ -1,10 +1,8 @@
 # SAIML: Scala AI and ML library
 
-This is a hobby project that does not intend to compete with the mainstream libraries on features or performance.
+These simple implementations might be useful if you are learning the AI algorithms, or want to write your own version.
 
-It includes some examples which might be useful if you are learning the algorithms, or want to start your own implementation.
-
-Think of it more as a cookbook.
+You can use this project as a library, a cookbook or a cheat sheet. For high performance, there are better options.
 
 If you want to read the library name aloud, try "say-mel" :)
 
@@ -16,6 +14,9 @@ A single layer, single node granddaddy of neural networks.
 * [Backprop](src/main/scala/saiml/nn/backprop)
 ([tests](src/test/scala/saiml/nn/backprop))
 A neural network with one hidden layer, using backpropagation.
+* [Genetic Algorithm](src/main/scala/saiml/ga)
+([tests](src/test/scala/saiml/ga))
+Genetic Algorithm with elitist tournament selection.
 
 ## License
 
