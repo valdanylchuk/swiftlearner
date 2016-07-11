@@ -5,7 +5,7 @@ import scala.util.Random
 
 
 /** Selects parents and evolves the next generation */
-class Population[A <: Individual {type Self = A} :ClassTag](
+class Population[A <: Individual[A] :ClassTag](
   val size: Int,
   tournamentSize: Int,
   givenIndividuals: Option[Vector[A]] = None
@@ -16,18 +16,14 @@ class Population[A <: Individual {type Self = A} :ClassTag](
   def getFittest: A = individuals.minBy(_.fitness)
 
   /** Tournament selection: pick the fittest one out of a random sample */
-  def tournamentSelect(): A = {
-    Vector.tabulate(tournamentSize) { _ =>
-      individuals(Random.nextInt(individuals.size))
-    }.minBy(_.fitness)
-  }
+  def tournamentSelect(): A = Stream.continually(Random.nextInt(individuals.size))
+    .distinct.take(tournamentSize).map(individuals).minBy(_.fitness)
 
   def evolve: Population[A] = {
     val nextGen = (1 until size).map { _ =>  // skip one for the elite
-      val parent1: A = tournamentSelect()
-      val parent2: A = tournamentSelect()
-      val child: A = parent1.crossover(parent2)
-      child.mutate()
+      val parent1 = tournamentSelect()
+      val parent2 = tournamentSelect()
+      parent1.crossover(parent2).mutate()
     }
     val withElite = (getFittest +: nextGen).toVector
     new Population(size, tournamentSize, Some(withElite))

@@ -6,12 +6,11 @@ import scala.util.Random
 /**
   * Example user domain implementation of Individual.
   *
-  * Usage: val result = new Genetic[HelloGenetic](100, 10).optimize(1000, 10000L)
+  * Usage: val result = new Genetic[HelloGenetic](50, 10).optimize(100, 10000L)
   *
   * Ref.: http://www.electricmonk.nl/log/2011/09/28/evolutionary-algorithm-evolving-hello-world/
   */
-class HelloGenetic(override val genome: String) extends Individual {
-  type Self = HelloGenetic
+class HelloGenetic(override val genome: String) extends Individual[HelloGenetic] {
   val hello = HelloGenetic.Hello
 
   /** Random default constructor */
@@ -24,7 +23,7 @@ class HelloGenetic(override val genome: String) extends Individual {
   }
 
   /** Crossover: take the head of one genome and the tail of another */
-  override def crossover(that: Individual): HelloGenetic = {
+  override def crossover(that: HelloGenetic): HelloGenetic = {
     val pos = Random.nextInt(hello.length)
     val newGenome = this.genome.substring(0, pos) + that.genome.substring(pos)
     new HelloGenetic(newGenome)
