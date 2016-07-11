@@ -1,4 +1,4 @@
-# SAIML: Scala AI and ML library
+# SAIML: Scala AI and ML library [![Build Status](https://travis-ci.org/valdanylchuk/saiml.svg?branch=master)](https://travis-ci.org/valdanylchuk/saiml)
 
 These simple implementations might be useful if you are learning the AI algorithms, or want to write your own version.
 
