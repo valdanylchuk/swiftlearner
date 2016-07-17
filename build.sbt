@@ -2,7 +2,7 @@ name := "saiml"
 
 organization := "com.danylchuk"
 
-version := "0.1.1"
+version := "0.1.2"
 
 scalaVersion := "2.11.8"
 
