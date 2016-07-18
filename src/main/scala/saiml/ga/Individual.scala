@@ -6,12 +6,12 @@ package saiml.ga
   *
   * See the HelloGenetic example in the tests.
   */
-abstract class Individual[A <: Individual[A]](val genome: String) {
+abstract class Individual[A <: Individual[A, B], B](val genome: Option[B]) {
   /** Please override with a random genome constructor satisfying your domain rules. */
-  def this() = this("")
+  def this() = this(None)
 
   /** Domain-specific fitness function. 0 = perfect fit; the higher the worse. */
-  def fitness: Int
+  def fitness: Double
 
   /**
     *  Domain-specific crossover function. Some ideas:

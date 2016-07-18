@@ -25,6 +25,20 @@ Genetic Algorithm with elitist tournament selection.
 ([tests](src/test/scala/saiml/bayes/GaussianNaiveBayesTest.scala))
 Gaussian naive Bayes classifier for continuous parameters.
 
+## Examples
+
+The examples I wrote so far are small enough to fit in the tests, so take a look there.
+
+The best example is classifying the classic
+[Fisher Iris dataset](https://en.wikipedia.org/wiki/Iris_flower_data_set)
+with three different algorithms:
+* [BackpropClassifier](src/test/scala/saiml/nn/backprop/BackpropClassifierTest.scala): 96% accuracy
+* [GeneticIris](src/test/scala/saiml/ga/GeneticTest.scala): 94% accuracy
+* [GaussianNaiveBayes](src/test/scala/saiml/bayes/GaussianNaiveBayesTest.scala): 94% accuracy
+
+The accuracy for backprop and the genetic algorithm go even higher with longer training;
+these figures are for the quick settings in the automated tests.
+
 ## License
 
 This is free software under BSD-style license.

@@ -5,7 +5,7 @@ import scala.util.Random
 
 
 /** Selects parents and evolves the next generation */
-class Population[A <: Individual[A] :ClassTag](
+class Population[A <: Individual[A, B] :ClassTag, B](
   val size: Int,
   tournamentSize: Int,
   givenIndividuals: Option[Vector[A]] = None
@@ -19,7 +19,7 @@ class Population[A <: Individual[A] :ClassTag](
   def tournamentSelect(): A = Stream.continually(Random.nextInt(individuals.size))
     .distinct.take(tournamentSize).map(individuals).minBy(_.fitness)
 
-  def evolve: Population[A] = {
+  def evolve: Population[A, B] = {
     val nextGen = (1 until size).map { _ =>  // skip one for the elite
       val parent1 = tournamentSelect()
       val parent2 = tournamentSelect()
