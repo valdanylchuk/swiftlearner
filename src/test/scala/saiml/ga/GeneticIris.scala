@@ -1,6 +1,7 @@
 package saiml.ga
 
 import saiml.data.FisherIris
+import saiml.math.VectorOp
 
 import scala.util.Random
 
@@ -22,8 +23,8 @@ class GeneticIris(override val genome: Option[Seq[Double]]) extends Individual[G
   override val fitness: Double = {
     val trainingSet = GeneticIris.trainingSet
     val diffs = for ((classIdx, params) <- GeneticIris.trainingSet) yield {
-      val classGenes = genomeVal.grouped(4).toSeq(classIdx)
-      params.zip(classGenes).map(Function.tupled(_ - _)).map(x => x * x).sum
+      val classGenes = genomeVal.grouped(4).toVector(classIdx)
+      VectorOp.squaredDistance(params, classGenes.toVector)
     }
     diffs.sum
   }

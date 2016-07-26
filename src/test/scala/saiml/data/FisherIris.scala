@@ -11,10 +11,10 @@ import scala.util.Random
   */
 object FisherIris {
   lazy val irisData = {
-    def toDataRow(csv: String): (Int, Seq[Double]) = {
+    def toDataRow(csv: String): (Int, Vector[Double]) = {
       val args = csv.split(',')
       val itemClass = args.head.toInt
-      val parameters = args.tail.map(_.toDouble)
+      val parameters = args.tail.map(_.toDouble).toVector
       (itemClass, parameters)
     }
     val dataFileURI = this.getClass.getClassLoader.getResource("FisherIris.csv").toURI
