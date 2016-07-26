@@ -11,7 +11,10 @@ Use this project as a prototyping library, a cookbook, or a cheat sheet.
 For high performance and rich features, there are better options.
 Still, these methods are fully functional and work well for small problem sizes.
 
-If you want to read the library name aloud, try "say-mel" :)
+To read the library name aloud, try "say-mel" :)
+
+To make one ML enthusiast happy, please star or fork this project,
+or leave a comment in the chat. ;)
 
 ## Contents
 
@@ -34,6 +37,8 @@ k-Nearest-Neighbors classifier.
 ## Examples
 
 The examples I wrote so far are small enough to fit in the tests, so take a look there.
+
+<img style="float: right;" src="img/iris-virginica.jpg" alt="Iris Virginica flower; credit: Wikimedia Commons"/>
 
 One example is classifying the classic
 [Fisher Iris flower dataset](https://en.wikipedia.org/wiki/Iris_flower_data_set)
