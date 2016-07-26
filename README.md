@@ -38,7 +38,7 @@ k-Nearest-Neighbors classifier.
 
 The examples I wrote so far are small enough to fit in the tests, so take a look there.
 
-<img style="float: right;" src="img/iris-virginica.jpg" alt="Iris Virginica flower; credit: Wikimedia Commons"/>
+<img align="right" src="img/iris-virginica.jpg" alt="Iris Virginica flower; credit: Wikimedia Commons"/>
 
 One example is classifying the classic
 [Fisher Iris flower dataset](https://en.wikipedia.org/wiki/Iris_flower_data_set)
