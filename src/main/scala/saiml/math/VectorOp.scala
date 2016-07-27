@@ -10,10 +10,20 @@ class VectorOp(v: Vector[Double]) {
     (for ((a, b) <- v zip that) yield a * b).sum
   }
 
+  /** subtract a vector */
   def -(that: Vector[Double]): Vector[Double] = {
     require(v.size == that.size, "vector size mismatch")
     for ((a, b) <- v zip that) yield a - b
   }
+
+  /** add vectors */
+  def +(that: Vector[Double]): Vector[Double] = {
+    require(v.size == that.size, "vector size mismatch")
+    for ((a, b) <- v zip that) yield a + b
+  }
+
+  /** divide vector by constant */
+  def /(divisor: Double): Vector[Double] = v.map(_ / divisor)
 }
 object VectorOp {
   implicit def vectorToVectorMul(v: Vector[Double]): VectorOp = new VectorOp(v)
