@@ -1,5 +1,6 @@
 package saiml.nn.backprop
 
+import saiml.math.VectorOp
 import saiml.math.VectorOp._
 
 
@@ -16,7 +17,7 @@ class BackpropNet(
   val outputLayer: Vector[Node]
 ) {
   /** Calculate the result without updating the network */
-  def calculateOutput(input: Vector[Double]): Vector[Double] = {
+  def calculateOutput(input: Vector[Float]): Vector[Float] = {
     val l2Output = hiddenLayer.map(_.calculateOutputFor(input))
     outputLayer.map(_.calculateOutputFor(l2Output))
   }
@@ -27,7 +28,7 @@ class BackpropNet(
     * @param rate Learning rate. Must be between 0 and 1. Use 1 if in doubt.
     *             Smaller values might help converge complex cases sometimes.
     **/
-  def learn(example: Vector[Double], target: Vector[Double], rate: Double = 1): BackpropNet = {
+  def learn(example: Vector[Float], target: Vector[Float], rate: Float = 1): BackpropNet = {
     require(rate <= 1 && rate > 0, "learning rate must be between 0 and 1")
 
     val calcHiddenLayer = hiddenLayer.map(_.withCalculatedOutputFor(example))
@@ -54,8 +55,8 @@ class BackpropNet(
   }
 
   /** Convenience shortcut for feeding several examples */
-  def learnSeq(examples: Traversable[(Vector[Double], Vector[Double])],
-               rate: Double = 1): BackpropNet = {
+  def learnSeq(examples: Traversable[(Vector[Float], Vector[Float])],
+               rate: Float = 1): BackpropNet = {
     examples.foldLeft(this) { (nn, ex) =>
       nn.learn(ex._1, ex._2, rate)
     }
@@ -70,32 +71,39 @@ object BackpropNet {
   def randomNet(nInput: Int, nHidden: Int, nOutput: Int, seed: Option[Long] = None) = {
     val r = new scala.util.Random()
     seed.foreach(r.setSeed)
-    val hiddenLayer = Vector.fill(nHidden)(new Node(Vector.fill(nInput)(r.nextDouble())))
-    val outputLayer = Vector.fill(nOutput)(new Node(Vector.fill(nHidden)(r.nextDouble())))
+    val hiddenLayer = Vector.fill(nHidden)(new Node(Array.fill(nInput)(r.nextFloat())))
+    val outputLayer = Vector.fill(nOutput)(new Node(Array.fill(nHidden)(r.nextFloat())))
     new BackpropNet(hiddenLayer, outputLayer)
   }
 }
 
 case class Node(
-  weights: Vector[Double],
-  output: Double = 0,
-  error: Double = 0
+  weights: Array[Float],
+  var output: Float = 0,
+  var error: Float = 0
 ) {
   /** Activation function (using the logistic function) */
-  private def f(x: Double) = 1.0 / (1.0 + Math.exp(-x))
+  private def f(x: Float): Float = (1.0 / (1.0 + Math.exp(-x))).toFloat
 
   /** Activation function derivative, used for learning */
-  private def ff(oldOutput: Double) = oldOutput * (1.0 - oldOutput)
+  private def ff(oldOutput: Float): Float = oldOutput * (1.0f - oldOutput)
 
-  def calculateOutputFor(input: Vector[Double]): Double = f(input * weights)
+  def calculateOutputFor(input: Vector[Float]): Float = f(VectorOp.dot(input, weights))
 
-  def withCalculatedOutputFor(input: Vector[Double]) =
+  def withCalculatedOutputFor(input: Vector[Float]) =
     this.copy(output = calculateOutputFor(input))
 
-  def updated(oldInputs: Vector[Double], partialError: Double, rate: Double) = {
-    val error = ff(output) * partialError
-    val newWeights = for ((w, x) <- weights zip oldInputs)
-                     yield w + rate * error * x
-    new Node(newWeights, output, error)
+  def updated(oldInputs: Vector[Float], partialError: Float, rate: Float) = {
+    error = ff(output) * partialError
+
+    val n = weights.length
+    //val newWeights = new Array[Float](n)
+    var i = 0
+    while (i < n) {
+      weights(i) = weights(i) + rate * error * oldInputs(i)
+      i += 1
+    }
+    //new Node(weights, output, error)
+    this
   }
 }

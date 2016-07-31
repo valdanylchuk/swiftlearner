@@ -48,7 +48,8 @@ class KMeans(data: Seq[Vector[Double]], k: Int, maxIterations: Int = 10000) {
   /** @return New means. Labels are discarded, their numeric values are random anyway. */
   private def updateMeans(labels: Seq[Int]): Seq[Vector[Double]] = {
     clustersFromLabels(labels).map { cluster =>
-      cluster.reduce(_ + _) / cluster.size.toDouble  // new mean vector in each cluster
+      val clusterSize = cluster.size.toDouble
+      cluster.reduce(_ + _).map(_ / clusterSize)  // new mean vector in each cluster
     }.toSeq
   }
 
