@@ -23,20 +23,26 @@ class BackpropClassifierTest extends Specification with LazyLogging {
     }
 
     "classify the handwritten digits from the MNIST dataset" >> {
-      val (trainingSet, testSet) = Mnist.trainingAndTestData(10000)
+      // These are the setting for a quick smoke test.
+      // For a better result, try nHidden=200, nRepeat = 1000, expectedAccuracy = 0.9
+      val nHidden = 200
+      val nRepeat = 1
+      val expectedAccuracy = 0.0
+
+      val (trainingSet, testSet) = Mnist.trainingAndTestData()
 
       val start = System.currentTimeMillis
 
-      val classifier = new BackpropClassifier(trainingSet, 200, 1)
+      val classifier = new BackpropClassifier(trainingSet, nHidden, nRepeat)
 
       val accuracy = (for ((digit, params) <- testSet) yield {
         classifier.predict(params) == digit
       }).count { x: Boolean => x } / testSet.size.toDouble
 
       val time = (System.currentTimeMillis - start) / 1000.0
-      logger.debug(s"MNIST time: ${time}s")
+      logger.debug(s"MNIST backprop time: ${time}s")
 
-      accuracy must be_>(0.0)
+      accuracy must be_>(expectedAccuracy)
     }
   }
 }

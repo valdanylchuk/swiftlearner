@@ -6,7 +6,7 @@ import org.specs2.mutable.Specification
 import saiml.coll.TraversableOp._
 
 class BackpropTest extends Specification with LazyLogging {
-  def learnAndTest(nn: BackpropNet, examples: Seq[(Vector[Float], Vector[Float])], times: Int) = {
+  def learnAndTest(nn: BackpropNet, examples: Seq[(Array[Float], Array[Float])], times: Int) = {
     val learned = nn.learnSeq(examples.repeat(times))
     Result.foreach(examples) { example =>
       learned.calculateOutput(example._1)
@@ -16,12 +16,12 @@ class BackpropTest extends Specification with LazyLogging {
 
   "BackpropNet" should {
     "reproduce the known example" >> {
-      val input = Vector[Float](0.35f, 0.9f)
-      val target = Vector(0.5f)
+      val input = Array[Float](0.35f, 0.9f)
+      val target = Array(0.5f)
 
       val nn = new BackpropNet(
-        Vector(Node(Array(0.1f, 0.8f)), Node(Array(0.4f, 0.6f))),
-        Vector(Node(Array(0.3f, 0.9f))))
+        Array(Node(Array(0.1f, 0.8f)), Node(Array(0.4f, 0.6f))),
+        Array(Node(Array(0.3f, 0.9f))))
 
       val learned = nn.learn(input, target)
 
@@ -46,10 +46,10 @@ class BackpropTest extends Specification with LazyLogging {
 
     "learn the OR function" >> {
       val OrExamples = Seq(
-        (Vector[Float](0f, 0f), Vector(0.0f)),
-        (Vector[Float](0f, 1f), Vector(1.0f)),
-        (Vector[Float](1f, 0f), Vector(1.0f)),
-        (Vector[Float](1f, 1f), Vector(1.0f)))
+        (Array[Float](0f, 0f), Array(0.0f)),
+        (Array[Float](0f, 1f), Array(1.0f)),
+        (Array[Float](1f, 0f), Array(1.0f)),
+        (Array[Float](1f, 1f), Array(1.0f)))
 
       val nn = BackpropNet.randomNet(2, 2, 1, Some(100L))
       learnAndTest(nn, OrExamples, 1000)
@@ -57,10 +57,10 @@ class BackpropTest extends Specification with LazyLogging {
 
     "learn the AND function" >> {
       val AndExamples = Seq(
-        (Vector[Float](0f, 0f), Vector(0.0f)),
-        (Vector[Float](0f, 1f), Vector(0.0f)),
-        (Vector[Float](1f, 0f), Vector(0.0f)),
-        (Vector[Float](1f, 1f), Vector(1.0f)))
+        (Array[Float](0f, 0f), Array(0.0f)),
+        (Array[Float](0f, 1f), Array(0.0f)),
+        (Array[Float](1f, 0f), Array(0.0f)),
+        (Array[Float](1f, 1f), Array(1.0f)))
 
       val nn = BackpropNet.randomNet(2, 3, 1, Some(100L))
       learnAndTest(nn, AndExamples, 1000)
@@ -68,10 +68,10 @@ class BackpropTest extends Specification with LazyLogging {
 
     "learn the XOR function" >> {
       val XorExamples = Seq(
-        (Vector[Float](0f, 0f), Vector(0.0f)),
-        (Vector[Float](0f, 1f), Vector(1.0f)),
-        (Vector[Float](1f, 0f), Vector(1.0f)),
-        (Vector[Float](1f, 1f), Vector(0.0f)))
+        (Array[Float](0f, 0f), Array(0.0f)),
+        (Array[Float](0f, 1f), Array(1.0f)),
+        (Array[Float](1f, 0f), Array(1.0f)),
+        (Array[Float](1f, 1f), Array(0.0f)))
 
       val nn = BackpropNet.randomNet(2, 4, 1, Some(100L))
       learnAndTest(nn, XorExamples, 6000)

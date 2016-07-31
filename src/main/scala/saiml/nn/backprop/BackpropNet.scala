@@ -13,11 +13,15 @@ import saiml.math.VectorOp._
   * https://web.archive.org/web/20150317210621/https://www4.rgu.ac.uk/files/chapter3%20-%20bp.pdf
   */
 class BackpropNet(
-  val hiddenLayer: Vector[Node],
-  val outputLayer: Vector[Node]
+  val hiddenLayer: Array[Node],
+  val outputLayer: Array[Node]
 ) {
+  val nInput = hiddenLayer(0).weights.length
+  val nHidden = hiddenLayer.length
+  val nOutput = outputLayer.length
+
   /** Calculate the result without updating the network */
-  def calculateOutput(input: Vector[Float]): Vector[Float] = {
+  def calculateOutput(input: Array[Float]): Array[Float] = {
     val l2Output = hiddenLayer.map(_.calculateOutputFor(input))
     outputLayer.map(_.calculateOutputFor(l2Output))
   }
@@ -28,34 +32,48 @@ class BackpropNet(
     * @param rate Learning rate. Must be between 0 and 1. Use 1 if in doubt.
     *             Smaller values might help converge complex cases sometimes.
     **/
-  def learn(example: Vector[Float], target: Vector[Float], rate: Float = 1): BackpropNet = {
+  def learn(example: Array[Float], target: Array[Float], rate: Float = 1): BackpropNet = {
     require(rate <= 1 && rate > 0, "learning rate must be between 0 and 1")
 
-    val calcHiddenLayer = hiddenLayer.map(_.withCalculatedOutputFor(example))
-    val calcHiddenLayerOutput = calcHiddenLayer.map(_.output)
-    val calcOutputLayer = outputLayer.map(_.withCalculatedOutputFor(calcHiddenLayerOutput))
+    // There is time to think in monads, and there is time to update a few billion weights.
 
-    val updatedOutputLayer = for ((outputNode, t) <- calcOutputLayer zip target) yield {
-
-      val partialError = t - outputNode.output
-
-      outputNode.updated(calcHiddenLayerOutput, partialError, rate)
-    }
-    val updatedOutputLayerErrors = updatedOutputLayer.map(_.error)
-
-    val updatedHiddenLayer = for ((hiddenNode, outputLayerWeightsForThisHiddenNode) <-
-                             calcHiddenLayer zip outputLayer.map(_.weights).transpose) yield {
-
-      val partialError = outputLayerWeightsForThisHiddenNode * updatedOutputLayerErrors
-
-      hiddenNode.updated(example, partialError, rate)
+    val hiddenLayerOutput = new Array[Float](nHidden)
+    var i = 0
+    while (i < nHidden) {
+      hiddenLayer(i).output = hiddenLayer(i).calculateOutputFor(example)
+      hiddenLayerOutput(i) = hiddenLayer(i).output
+      i += 1
     }
 
-    new BackpropNet(updatedHiddenLayer, updatedOutputLayer)
+    var j = 0
+    while (j < nOutput) {
+      outputLayer(j).output = outputLayer(j).calculateOutputFor(hiddenLayerOutput)
+
+      val partialError = target(j) - outputLayer(j).output
+
+      outputLayer(j) = outputLayer(j).updated(hiddenLayerOutput, partialError, rate)
+      j += 1
+    }
+
+    i = 0
+    while (i < nHidden) {
+      j = 0
+      var partialError = 0.0f
+      while (j < nOutput) {
+        // TODO: check that the old weights are still there, or add a separate updatedOutputLayer
+        partialError += outputLayer(j).weights(i) * outputLayer(j).error
+        j += 1
+      }
+
+      hiddenLayer(i) = hiddenLayer(i).updated(example, partialError, rate)
+      i += 1
+    }
+
+    this
   }
 
   /** Convenience shortcut for feeding several examples */
-  def learnSeq(examples: Traversable[(Vector[Float], Vector[Float])],
+  def learnSeq(examples: Traversable[(Array[Float], Array[Float])],
                rate: Float = 1): BackpropNet = {
     examples.foldLeft(this) { (nn, ex) =>
       nn.learn(ex._1, ex._2, rate)
@@ -71,8 +89,8 @@ object BackpropNet {
   def randomNet(nInput: Int, nHidden: Int, nOutput: Int, seed: Option[Long] = None) = {
     val r = new scala.util.Random()
     seed.foreach(r.setSeed)
-    val hiddenLayer = Vector.fill(nHidden)(new Node(Array.fill(nInput)(r.nextFloat())))
-    val outputLayer = Vector.fill(nOutput)(new Node(Array.fill(nHidden)(r.nextFloat())))
+    val hiddenLayer = Array.fill(nHidden)(new Node(Array.fill(nInput)(r.nextFloat())))
+    val outputLayer = Array.fill(nOutput)(new Node(Array.fill(nHidden)(r.nextFloat())))
     new BackpropNet(hiddenLayer, outputLayer)
   }
 }
@@ -88,22 +106,18 @@ case class Node(
   /** Activation function derivative, used for learning */
   private def ff(oldOutput: Float): Float = oldOutput * (1.0f - oldOutput)
 
-  def calculateOutputFor(input: Vector[Float]): Float = f(VectorOp.dot(input, weights))
+  def calculateOutputFor(input: Array[Float]): Float = f(VectorOp.dot(input, weights))
 
-  def withCalculatedOutputFor(input: Vector[Float]) =
-    this.copy(output = calculateOutputFor(input))
-
-  def updated(oldInputs: Vector[Float], partialError: Float, rate: Float) = {
+  def updated(oldInputs: Array[Float], partialError: Float, rate: Float) = {
     error = ff(output) * partialError
 
     val n = weights.length
-    //val newWeights = new Array[Float](n)
     var i = 0
     while (i < n) {
       weights(i) = weights(i) + rate * error * oldInputs(i)
       i += 1
     }
-    //new Node(weights, output, error)
+
     this
   }
 }
