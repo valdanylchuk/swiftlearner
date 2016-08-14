@@ -8,7 +8,7 @@ import saiml.data.{FisherIris, Mnist}
 class BackpropClassifierTest extends Specification with LazyLogging {
   "BackpropClassifier" should {
     "classify the flowers from the Fisher Iris dataset" >> {
-      val (trainingSet, testSet) = FisherIris.trainingAndTestDataFloat
+      val (trainingSet, testSet) = FisherIris.trainingAndTestDataFloat()
 
       // Normalize the input values to speed up learning
       def normalize(x: Float): Float = (x - 25) / 25
@@ -24,10 +24,11 @@ class BackpropClassifierTest extends Specification with LazyLogging {
 
     "classify the handwritten digits from the MNIST dataset" >> {
       // These are the setting for a quick smoke test.
-      // For a better result, try nHidden=200, nRepeat = 1000, expectedAccuracy = 0.9
+      // For a better result, try nHidden=300, nRepeat = 6000, expectedAccuracy = 0.9
+      // Not practical for now: 700, 1000 => 0.18, ~ 20h
       val nHidden = 200
       val nRepeat = 1
-      val expectedAccuracy = 0.0
+      val expectedAccuracy = 0.1
 
       val (trainingSet, testSet) = Mnist.trainingAndTestData()
 

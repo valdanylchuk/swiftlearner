@@ -41,16 +41,4 @@ object VectorOp {
 
   def distance(x: Vector[Double], y: Vector[Double]): Double =
     math.sqrt(squaredDistance(x, y))
-
-  def dot(a: Array[Float], b: Array[Float]): Float = {
-    require(a.length == b.length, "vector size mismatch")
-    val n = a.length
-    var sum: Float = 0f
-    var i = 0
-    while (i < n) {
-      sum += a(i) * b(i)
-      i += 1
-    }
-    sum
-  }
 }

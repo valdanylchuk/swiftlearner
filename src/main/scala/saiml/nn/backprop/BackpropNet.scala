@@ -1,6 +1,6 @@
 package saiml.nn.backprop
 
-import saiml.math.VectorOp
+import saiml.math.{ArrayOp, VectorOp}
 import saiml.math.VectorOp._
 
 
@@ -11,6 +11,7 @@ import saiml.math.VectorOp._
   *
   * Ref.: Robert Gordon University, "The Back Propagation Algorithm"
   * https://web.archive.org/web/20150317210621/https://www4.rgu.ac.uk/files/chapter3%20-%20bp.pdf
+  * https://en.wikipedia.org/wiki/Backpropagation
   */
 class BackpropNet(
   val hiddenLayer: Array[Node],
@@ -60,7 +61,6 @@ class BackpropNet(
       j = 0
       var partialError = 0.0f
       while (j < nOutput) {
-        // TODO: check that the old weights are still there, or add a separate updatedOutputLayer
         partialError += outputLayer(j).weights(i) * outputLayer(j).error
         j += 1
       }
@@ -106,7 +106,7 @@ case class Node(
   /** Activation function derivative, used for learning */
   private def ff(oldOutput: Float): Float = oldOutput * (1.0f - oldOutput)
 
-  def calculateOutputFor(input: Array[Float]): Float = f(VectorOp.dot(input, weights))
+  def calculateOutputFor(input: Array[Float]): Float = f(ArrayOp.dot(input, weights))
 
   def updated(oldInputs: Array[Float], partialError: Float, rate: Float) = {
     error = ff(output) * partialError

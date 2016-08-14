@@ -36,6 +36,9 @@ k-Nearest Neighbors classifier.
 * [k-Means](src/main/scala/saiml/kmeans)
 ([tests](src/test/scala/saiml/kmeans))
 k-Means clustering.
+* [Softmax](src/main/scala/saiml/softmax)
+([tests](src/test/scala/saiml/softmax))
+Softmax (multinomial logistic) regression.
 
 ## Examples
 
@@ -50,7 +53,8 @@ with different algorithms:
 * [GeneticIris](src/test/scala/saiml/ga/GeneticTest.scala): 94% accuracy
 * [GaussianNaiveBayes](src/test/scala/saiml/bayes/GaussianNaiveBayesTest.scala): 94% accuracy
 * [KNearestNeighbors](src/test/scala/saiml/knn/KNearestNeighborsTest.scala): 94% accuracy
-* [KMeans](src/test/scala/saiml/kmeans/KMeansTest.scala): clustering, 87% accuracy
+* [KMeans](src/test/scala/saiml/kmeans/KMeansTest.scala): semi-supervised clustering, 87% accuracy
+* [SoftmaxClassifier](src/test/scala/saiml/softmax/SoftmaxTest.scala): 90% accuracy
 
 The accuracy for backprop and the genetic algorithm goes higher with longer training;
 these figures are for the quick settings in the automated tests.

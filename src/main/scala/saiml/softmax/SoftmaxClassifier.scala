@@ -1,28 +1,29 @@
-package saiml.nn.backprop
+package saiml.softmax
 
 import saiml.coll.TraversableOp._
 import saiml.math.ArrayOp
 
 
 /**
-  * A convenience shortcut for applying BackpropNet to classification problems.
+  * A convenience shortcut for applying Softmax regression to classification problems.
   *
   * Assumes consecutive class indices 0..N
   *
   * @param trainingSet A sequence of entries: (class: Int, parameters: Seq[Float])
-  * @param nHidden Number of hidden nodes
   * @param nTimes Number of times to repeat the training sequence
-  * @param normalize Optional normalization function to speed up learning
+  * @param normalize Optional input normalization function to speed up learning
   */
-class BackpropClassifier(
+class SoftmaxClassifier(
   trainingSet: Seq[(Int, Seq[Float])],
-  nHidden: Int,
   nTimes: Int,
-  normalize: (Float) => Float = identity
+  learnRate: Float = 0.001f,
+  batchSize: Int = 1,
+  normalize: (Float) => Float = identity,
+  randomSeed: Option[Long] = None
 ) {
   /** Predicts the most likely class given the parameters. */
   def predict(parameters: Seq[Float]): Int =
-    ArrayOp.indexOfMax(learned.calculateOutput(Array(parameters.map(normalize): _*)))
+    ArrayOp.indexOfMax(learned.predict(Array(parameters.map(normalize): _*)))
 
   val nClasses = trainingSet.map(_._1).max + 1
   val nParams = trainingSet.head._2.size
@@ -33,6 +34,6 @@ class BackpropClassifier(
     (Array(params.map(normalize): _*), targetOneHot)
   }
 
-  val nn = BackpropNet.randomNet(nParams, nHidden, nClasses)
-  val learned = nn.learnSeq(examples.repeat(nTimes))
+  val softmax = Softmax.withRandomWeights(nParams, nClasses, learnRate, randomSeed, batchSize)
+  val learned = softmax.learnSeq(examples.repeat(nTimes).toIterable)
 }
