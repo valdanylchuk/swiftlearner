@@ -31,10 +31,10 @@ class SoftmaxTest extends Specification with LazyLogging {
       val nRepeat = 50  // usually reaches a minimum and stops much sooner
       // val learnSpeed = 0.01  // for not normalized stable: 0.01 => 0.855
       val learnSpeed = 0.1  // for normalized naive
-      val stuckIterationLimit = 5000  // Increase to 100000 for better results.
+      val stuckIterationLimit = 600  // Increase to 100000 for better results.
       val batchSize = 1  // 1 works best most of the time
       val useStable = false  // "false" achieves better accuracy for normalized inputs
-      val expectedAccuracy = 0.88  // 0.92 with stuckIterationLimit = 100000
+      val expectedAccuracy = 0.8  // 0.92 with stuckIterationLimit = 100000
 
       val (trainingSet, testSet) = Mnist.shuffledTrainingAndTestData(randomSeed = randomSeed)
 
