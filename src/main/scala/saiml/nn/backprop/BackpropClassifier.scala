@@ -18,11 +18,16 @@ class BackpropClassifier(
   trainingSet: Seq[(Int, Seq[Float])],
   nHidden: Int,
   nTimes: Int,
-  normalize: (Float) => Float = identity
+  learnRate: Float = 1.0f,
+  normalize: (Float) => Float = identity,
+  seed: Option[Long] = None
 ) {
   /** Predicts the most likely class given the parameters. */
-  def predict(parameters: Seq[Float]): Int =
-    ArrayOp.indexOfMax(learned.calculateOutput(Array(parameters.map(normalize): _*)))
+  def predict(parameters: Seq[Float]): Int = {
+    val predicted = learned.calculateOutput(Array(parameters.map(normalize): _*))
+    predicted.indexOf(predicted.max)
+    // ArrayOp.indexOfMax(learned.calculateOutput(Array(parameters.map(normalize): _*)))
+  }
 
   val nClasses = trainingSet.map(_._1).max + 1
   val nParams = trainingSet.head._2.size
@@ -33,6 +38,6 @@ class BackpropClassifier(
     (Array(params.map(normalize): _*), targetOneHot)
   }
 
-  val nn = BackpropNet.randomNet(nParams, nHidden, nClasses)
-  val learned = nn.learnSeq(examples.repeat(nTimes))
+  val nn = BackpropNet.randomNet(nParams, nHidden, nClasses, seed)
+  val learned = nn.learnSeq(examples.repeat(nTimes), learnRate)
 }

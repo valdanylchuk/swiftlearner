@@ -59,6 +59,13 @@ with different algorithms:
 The accuracy for backprop and the genetic algorithm goes higher with longer training;
 these figures are for the quick settings in the automated tests.
 
+<img align="right" src="img/mnist-handwritten-digits.jpg" alt="MNIST handwritten digits"/>
+
+Another classic example is classifying the handwritten digits from the
+[MNIST database](https://en.wikipedia.org/wiki/MNIST_database):
+* [SoftmaxClassifier](src/test/scala/saiml/softmax/SoftmaxTest.scala): 92% accuracy
+* [BackpropClassifier](src/test/scala/saiml/nn/backprop/BackpropClassifierTest.scala): 94% accuracy
+
 ## License
 
 This is free software under a BSD-style license.

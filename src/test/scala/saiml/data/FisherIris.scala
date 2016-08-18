@@ -25,6 +25,14 @@ object FisherIris {
   /** Split to 2/3 training and 1/3 test data at random */
   def trainingAndTestData = Random.shuffle(irisData).splitAt(irisData.size * 2 / 3)
 
+  /** Split to 2/3 training and 1/3 test data at random (Double version) */
+  def trainingAndTestDataDouble(randomSeed: Option[Long] = None) = {
+    val r = new scala.util.Random()
+    randomSeed.foreach(r.setSeed)
+    val data = irisData map Function.tupled((a, xs) => (a, xs.map(_.toDouble)))
+    r.shuffle(data).splitAt(data.size * 2 / 3)
+  }
+
   /** Split to 2/3 training and 1/3 test data at random (Float version) */
   def trainingAndTestDataFloat(randomSeed: Option[Long] = None) = {
     val r = new scala.util.Random()

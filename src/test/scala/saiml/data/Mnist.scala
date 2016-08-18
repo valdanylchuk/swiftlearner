@@ -1,7 +1,7 @@
 package saiml.data
 
 import java.util.zip.GZIPInputStream
-
+import saiml.util
 
 /**
   * The classic MNIST handwritten digits dataset.
@@ -12,7 +12,9 @@ import java.util.zip.GZIPInputStream
 object Mnist {
   /** Training images as flattened vectors (of concatenated lines) */
   def trainImages: Iterator[Vector[Float]] =
-    trainImagesByteArray.iterator.map(_.toVector.map(_.toFloat))
+    trainImagesByteArray.iterator.map(_.toVector.map(util.byteToUnsignedInt(_).toFloat))
+  def trainImagesDouble: Iterator[Vector[Double]] =
+    trainImagesByteArray.iterator.map(_.toVector.map(util.byteToUnsignedInt(_).toDouble))
 
   lazy val trainImagesByteArray: Array[Array[Byte]] = readImages(trainImagesFile)
 
@@ -21,19 +23,41 @@ object Mnist {
 
   /** Test images as flattened vectors (of concatenated lines) */
   def testImages: Iterator[Vector[Float]] =
-    testImagesByteArray.iterator.map(_.toVector).map(_.map(_.toFloat))
+    testImagesByteArray.iterator.map(_.toVector).map(_.map(util.byteToUnsignedInt(_).toFloat))
+  def testImagesDouble: Iterator[Vector[Double]] =
+    testImagesByteArray.iterator.map(_.toVector).map(_.map(util.byteToUnsignedInt(_).toDouble))
 
   lazy val testImagesByteArray: Array[Array[Byte]] = readImages(testImagesFile)
 
   /** Labels corresponding to the test images */
   lazy val testLabels: Stream[Int] = readLabels(testLabelsFile)
 
+  def labeledTrainIterator = trainLabels.iterator zip trainImages
+  def labeledTrainIteratorDouble = trainLabels.iterator zip trainImagesDouble
+  def labeledTestIterator = testLabels.iterator zip testImages
+  def labeledTestIteratorDouble = testLabels.iterator zip testImagesDouble
+
   /** Convenience shortcut */
   def trainingAndTestData(nTrainPoints: Int = TrainSetSize)
   : (Seq[(Int, Vector[Float])], Seq[(Int, Vector[Float])]) = {
-    val labeledTrainSet = trainLabels.iterator zip trainImages take nTrainPoints
-    val labeledTestSet = testLabels.iterator zip testImages take nTrainPoints
+    val labeledTrainSet = labeledTrainIterator take nTrainPoints
+    val labeledTestSet = labeledTestIterator take nTrainPoints
     (labeledTrainSet.toSeq, labeledTestSet.toSeq)
+  }
+  def trainingAndTestDataDouble(nTrainPoints: Int = TrainSetSize)
+  : (Seq[(Int, Vector[Double])], Seq[(Int, Vector[Double])]) = {
+    val labeledTrainSet = labeledTrainIteratorDouble take nTrainPoints
+    val labeledTestSet = labeledTestIteratorDouble take nTrainPoints
+    (labeledTrainSet.toSeq, labeledTestSet.toSeq)
+  }
+
+  /** Recommended when the little extra cost is not critical. */
+  def shuffledTrainingAndTestData(nTrainPoints: Int = TrainSetSize, randomSeed: Option[Long] = None)
+  : (Seq[(Int, Vector[Double])], Seq[(Int, Vector[Double])]) = {
+    val r = new scala.util.Random()
+    randomSeed.foreach(r.setSeed)
+    val (labeledTrainSet, labeledTestSet) = trainingAndTestDataDouble(nTrainPoints)
+    (r.shuffle(labeledTrainSet), labeledTestSet)
   }
 
   val ImageWidth = 28
