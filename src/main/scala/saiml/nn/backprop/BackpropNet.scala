@@ -1,5 +1,6 @@
 package saiml.nn.backprop
 
+import com.typesafe.scalalogging.LazyLogging
 import saiml.math.{ArrayOp, VectorOp}
 import saiml.math.VectorOp._
 
@@ -13,10 +14,10 @@ import saiml.math.VectorOp._
   * https://web.archive.org/web/20150317210621/https://www4.rgu.ac.uk/files/chapter3%20-%20bp.pdf
   * https://en.wikipedia.org/wiki/Backpropagation
   */
-class BackpropNet(
+class BackpropNet (
   val hiddenLayer: Array[Node],
   val outputLayer: Array[Node]
-) {
+) extends LazyLogging {
   val nInput = hiddenLayer(0).weights.length
   val nHidden = hiddenLayer.length
   val nOutput = outputLayer.length
@@ -75,6 +76,7 @@ class BackpropNet(
   /** Convenience shortcut for feeding several examples */
   def learnSeq(examples: Traversable[(Array[Float], Array[Float])],
                rate: Float = 1): BackpropNet = {
+    logger.info(s"Learning the training set: ${examples.size} entries")
     examples.foldLeft(this) { (nn, ex) =>
       nn.learn(ex._1, ex._2, rate)
     }

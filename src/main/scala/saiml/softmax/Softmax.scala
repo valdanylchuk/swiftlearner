@@ -309,6 +309,7 @@ class Softmax(weights: Array[Double],
       i += 1
     }
 
+    logger.info(s"Learning the training set: ${examples.size} entries")
     examples.grouped(batchSize).foldLeft(this) { (acc, ex) =>
       val (learned, shouldStop) = acc.learn(ex)
       if (shouldStop) return this

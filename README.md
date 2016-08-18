@@ -64,7 +64,7 @@ these figures are for the quick settings in the automated tests.
 Another classic example is classifying the handwritten digits from the
 [MNIST database](https://en.wikipedia.org/wiki/MNIST_database):
 * [SoftmaxClassifier](src/test/scala/saiml/softmax/SoftmaxTest.scala): 92% accuracy
-* [BackpropClassifier](src/test/scala/saiml/nn/backprop/BackpropClassifierTest.scala): 94% accuracy
+* [BackpropClassifier](src/test/scala/saiml/nn/backprop/BackpropClassifierTest.scala): 95% accuracy
 
 ## License
 

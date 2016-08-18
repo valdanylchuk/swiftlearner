@@ -30,11 +30,11 @@ class SoftmaxTest extends Specification with LazyLogging {
     "classify the handwritten digits from the MNIST dataset" >> {
       val nRepeat = 50  // usually reaches a minimum and stops much sooner
       // val learnSpeed = 0.01  // for not normalized stable: 0.01 => 0.855
-      val learnSpeed = 0.1
-      val stuckIterationLimit = 100000  // it helps, since we have 60000 training examples
+      val learnSpeed = 0.1  // for normalized naive
+      val stuckIterationLimit = 5000  // Increase to 100000 for better results.
       val batchSize = 1  // 1 works best most of the time
       val useStable = false  // "false" achieves better accuracy for normalized inputs
-      val expectedAccuracy = 0.9  // 0.92 with the current settings and seed
+      val expectedAccuracy = 0.88  // 0.92 with stuckIterationLimit = 100000
 
       val (trainingSet, testSet) = Mnist.shuffledTrainingAndTestData(randomSeed = randomSeed)
 
@@ -42,9 +42,11 @@ class SoftmaxTest extends Specification with LazyLogging {
 
       def normalize(x: Double): Double = x / 256.0  // source byte range to (0.0; 1.0)
 
+      logger.info("creating the classifier")
       val classifier = new SoftmaxClassifier(trainingSet, nRepeat,
         learnSpeed, stuckIterationLimit, batchSize, normalize, randomSeed, useStable)
 
+      logger.info("checking the accuracy")
       val accuracyData = for ((digit, params) <- testSet) yield {
         val predicted = classifier.predict(params)
         logger.trace(s"Predicted: $predicted; actual: $digit")

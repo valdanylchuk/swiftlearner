@@ -1,6 +1,8 @@
 package saiml.data
 
+import java.io.BufferedInputStream
 import java.util.zip.GZIPInputStream
+
 import saiml.util
 
 /**
@@ -75,8 +77,8 @@ object Mnist {
   private lazy val testLabelsFile = getFileStream("t10k-labels-idx1-ubyte")
 
   private def getFileStream(name: String): Iterator[Int] = {
-    val inStream = new GZIPInputStream(this.getClass.getClassLoader
-      .getResourceAsStream(s"mnist/$name.gz"))
+    val inStream = new BufferedInputStream(new GZIPInputStream(
+      this.getClass.getClassLoader.getResourceAsStream(s"mnist/$name.gz")))
 
     Iterator.continually(inStream.read()).takeWhile(-1 != _)
   }
