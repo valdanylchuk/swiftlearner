@@ -15,3 +15,5 @@ libraryDependencies ++= Seq(
   "ch.qos.logback"             %  "logback-classic" % "1.1.7",
   "org.specs2"                 %% "specs2-core"     % "3.8.4" % "test"
 )
+
+parallelExecution in Test := false
