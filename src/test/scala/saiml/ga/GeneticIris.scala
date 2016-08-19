@@ -48,7 +48,7 @@ object GeneticIris {
   // We need the training set here for use in the fitness function.
   // We also store the corresponding test set for use in the tests,
   // because FisherIris splits the data randomly every time.
-  lazy val (trainingSet, testSet) = FisherIris.trainingAndTestData
+  lazy val (trainingSet, testSet) = FisherIris.trainingAndTestData(Some(0L))
 
   val genomeLength = 12  // 3 classes * 4 params
 

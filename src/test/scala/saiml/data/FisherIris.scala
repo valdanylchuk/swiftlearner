@@ -1,7 +1,6 @@
 package saiml.data
 
 import scala.io.Source
-import scala.util.Random
 
 /**
   * The classic Fisher Iris flower dataset as an example.
@@ -23,7 +22,11 @@ object FisherIris {
   }
 
   /** Split to 2/3 training and 1/3 test data at random */
-  def trainingAndTestData = Random.shuffle(irisData).splitAt(irisData.size * 2 / 3)
+  def trainingAndTestData(randomSeed: Option[Long] = None) = {
+    val r = new scala.util.Random()
+    randomSeed.foreach(r.setSeed)
+    r.shuffle(irisData).splitAt(irisData.size * 2 / 3)
+  }
 
   /** Split to 2/3 training and 1/3 test data at random (Double version) */
   def trainingAndTestDataDouble(randomSeed: Option[Long] = None) = {

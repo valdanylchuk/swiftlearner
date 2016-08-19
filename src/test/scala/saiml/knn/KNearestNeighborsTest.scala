@@ -7,7 +7,7 @@ import saiml.data.FisherIris
 class KNearestNeighborsTest extends Specification {
   "KNearestNeighbors" should {
     "sort the flowers from the Fisher Iris dataset" >> {
-      val (trainingSet, testSet) = FisherIris.trainingAndTestData
+      val (trainingSet, testSet) = FisherIris.trainingAndTestData(Some(0L))
 
       val classifier = new KNearestNeighbors(trainingSet)
 
