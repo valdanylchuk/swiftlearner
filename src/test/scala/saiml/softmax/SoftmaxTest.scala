@@ -53,7 +53,7 @@ class SoftmaxTest extends Specification with LazyLogging with DataTables {
       val batchSize = 1  // 1 works best most of the time
       val useStable = false  // "false" achieves better accuracy for normalized inputs
       val stuckIterationLimit = 200  // Increase to 100000 for better results
-      val numberOfExamplesToLoad = 60000  // Increase to 60000 for the full training set
+      val numberOfExamplesToLoad = 30000  // Increase to 60000 for the full training set
       val expectedAccuracy = 0.7  // 0.92 with stuckIterationLimit = 100000 and full training set
 
       val (trainingSet, testSet) = Mnist.shuffledTrainingAndTestData(numberOfExamplesToLoad, randomSeed = randomSeed)
