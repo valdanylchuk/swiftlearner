@@ -1,8 +1,8 @@
-name := "saiml"
+name := "swiftlearner"
 
 organization := "com.danylchuk"
 
-version := "0.1.10"
+version := "0.2.0"
 
 scalaVersion := "2.11.8"
 
