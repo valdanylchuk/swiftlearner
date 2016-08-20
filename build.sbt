@@ -33,7 +33,7 @@ publishArtifact in Test := false
 pomIncludeRepository := { _ => false }
 
 pomExtra := (
-  <url>http://jsuereth.com/scala-arm</url>
+  <url>https://github.com/valdanylchuk/swiftlearner</url>
     <licenses>
       <license>
         <name>BSD-style</name>
