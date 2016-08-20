@@ -13,7 +13,7 @@ It is easy to fork it or copy-paste individual methods and tweak to your liking.
 
 Some of the methods are very short, thanks to the elegance of the classic algorithms,
 and the expressive power of Scala. Some are optimized slightly, just enough to accommodate the test data sets.
-Those are not idiomatic Scala, closer to CS 101 while loops, which ar longer, but perform better.
+Those are not idiomatic Scala, closer to CS 101 while loops, which are longer, but perform better.
 They are still easy to follow, no black magic there.
 
 Use this project as a prototyping library, a cookbook, or a cheat sheet.
