@@ -1,6 +1,6 @@
 # SwiftLearner: Scala machine learning library
 
-[![Build Status](https://travis-ci.org/valdanylchuk/saiml.svg?branch=master)](https://travis-ci.org/valdanylchuk/saiml) [![Join the chat at https://gitter.im/valdanylchuk/saiml](https://badges.gitter.im/valdanylchuk/saiml.svg)](https://gitter.im/valdanylchuk/saiml?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Build Status](https://travis-ci.org/valdanylchuk/swiftlearner.svg?branch=master)](https://travis-ci.org/valdanylchuk/swiftlearner) [![Join the chat at https://gitter.im/valdanylchuk/swiftlearner](https://badges.gitter.im/valdanylchuk/swiftlearner.svg)](https://gitter.im/valdanylchuk/swiftlearner?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 <img align="right" src="img/swiftlearner.jpg" alt="Swift Learner"/>
 
@@ -48,7 +48,7 @@ k-Nearest Neighbors classifier.
 k-Means clustering.
 * [Softmax](src/main/scala/com/danylchuk/swiftlearner/softmax)
 ([tests](src/test/scala/com/danylchuk/swiftlearner/softmax))
-Softmax (multinomial logistic) regression.
+Softmax (multinomial logistic) regression with SGD and AdaGrad.
 
 ## Examples
 

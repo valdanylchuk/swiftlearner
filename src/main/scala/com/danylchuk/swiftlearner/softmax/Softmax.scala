@@ -6,7 +6,7 @@ import com.typesafe.scalalogging.LazyLogging
 
 
 /**
-  * Softmax (multinomial logistic) regression
+  * Softmax (multinomial logistic) regression with SGD and AdaGrad
   *
   * Ref: https://en.wikipedia.org/wiki/Multinomial_logistic_regression
   * http://ufldl.stanford.edu/wiki/index.php/Softmax_Regression
