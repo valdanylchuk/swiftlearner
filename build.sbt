@@ -43,7 +43,7 @@ pomExtra := (
     </licenses>
     <scm>
       <url>git@github.com:valdanylchuk/swiftlearner.git</url>
-      <connection>scm:gitgit@github.com:valdanylchuk/swiftlearner.git</connection>
+      <connection>scm:git:git@github.com:valdanylchuk/swiftlearner.git</connection>
     </scm>
     <developers>
       <developer>
