@@ -1,6 +1,7 @@
 package saiml.softmax
 
 import saiml.coll.TraversableOp._
+import saiml.math.ArrayOp
 
 
 /**
@@ -24,8 +25,19 @@ class SoftmaxClassifier(
 ) {
   /** Predicts the most likely class given the parameters. */
   def predict(parameters: Seq[Double]): Int = {
-    val predicted = learned.predict(Array(parameters.map(normalize): _*))
-    predicted.indexOf(predicted.max)
+    val predicted = learned.predict(normalizeSeq(parameters))
+    ArrayOp.indexOfMax(predicted)
+  }
+
+  private def normalizeSeq(params: Seq[Double]): Array[Double] = {
+    val n = params.length
+    val normalized = new Array[Double](n)
+    var i = 0
+    while (i < n) {
+      normalized(i) = normalize(params(i))
+      i += 1
+    }
+    normalized
   }
 
   val nClasses = trainingSet.map(_._1).max + 1
@@ -34,10 +46,10 @@ class SoftmaxClassifier(
   val examples = trainingSet map Function.tupled { (classIdx, params) =>
     val targetOneHot =  Array.fill[Double](nClasses)(0.0)
     targetOneHot(classIdx) = 1.0
-    (Array(params.map(normalize): _*), targetOneHot)
+    (normalizeSeq(params), targetOneHot)
   }
 
   val softmax = Softmax.withRandomWeights(nParams, nClasses, learnRate,
     stuckIterationLimit, randomSeed, batchSize, useStable)
-  val learned = softmax.learnSeq(examples.repeat(nTimes).toIterable)
+  val learned = softmax.learnSeq(examples.repeat(nTimes))
 }

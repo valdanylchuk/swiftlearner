@@ -1,14 +1,33 @@
 package saiml.softmax
 
 import com.typesafe.scalalogging.LazyLogging
+import org.specs2.matcher.DataTables
 import org.specs2.mutable.Specification
 import saiml.data.{FisherIris, Mnist}
 
 
-class SoftmaxTest extends Specification with LazyLogging {
+class SoftmaxTest extends Specification with LazyLogging with DataTables {
   val randomSeed = Some(0L)
 
   "Softmax" should {
+    "operate on primitives" >> {
+      val examples = Vector((Array(1.0, 1.0), Array(1.0)),
+                            (Array(1.0, 0.0), Array(0.0)),
+                            (Array(0.0, 1.0), Array(0.0)),
+                            (Array(0.0, 0.0), Array(0.0)))
+      val softmax = Softmax.withRandomWeights(2, 1, 0.1, 10)
+      val trained = softmax.learnSeq(examples)
+
+      "elementClass" |
+        trained.weights(0).getClass |
+        trained.target(0)(0).getClass |
+        trained.input(0)(0).getClass |
+        trained.lineOut(0)(0).getClass |
+        trained.predicted(0)(0).getClass |> { elementClass =>
+        elementClass.isPrimitive must beTrue
+      }
+    }
+
     "classify the flowers from the Fisher Iris dataset" >> {
       val (trainingSet, testSet) = FisherIris.trainingAndTestDataDouble(randomSeed)
 
@@ -31,12 +50,13 @@ class SoftmaxTest extends Specification with LazyLogging {
       val nRepeat = 50  // usually reaches a minimum and stops much sooner
       // val learnSpeed = 0.01  // for not normalized stable: 0.01 => 0.855
       val learnSpeed = 0.1  // for normalized naive
-      val stuckIterationLimit = 600  // Increase to 100000 for better results.
       val batchSize = 1  // 1 works best most of the time
       val useStable = false  // "false" achieves better accuracy for normalized inputs
-      val expectedAccuracy = 0.8  // 0.92 with stuckIterationLimit = 100000
+      val stuckIterationLimit = 200  // Increase to 100000 for better results
+      val numberOfExamplesToLoad = 60000  // Increase to 60000 for the full training set
+      val expectedAccuracy = 0.7  // 0.92 with stuckIterationLimit = 100000 and full training set
 
-      val (trainingSet, testSet) = Mnist.shuffledTrainingAndTestData(randomSeed = randomSeed)
+      val (trainingSet, testSet) = Mnist.shuffledTrainingAndTestData(numberOfExamplesToLoad, randomSeed = randomSeed)
 
       val start = System.currentTimeMillis
 

@@ -2,6 +2,7 @@ package saiml.softmax
 
 import com.typesafe.scalalogging.LazyLogging
 import saiml.math.{ArrayOp, MatrixOp}
+import saiml.util._
 
 
 /**
@@ -27,7 +28,7 @@ import saiml.math.{ArrayOp, MatrixOp}
   * @param useStable Use a numerically stable softmax version, more tolerant to broad input ranges.
   *                  Recommended most of the time.
   */
-class Softmax(weights: Array[Double],
+class Softmax(val weights: Array[Double],
               nClasses: Int,
               inputDataLength: Int,
               learnRate: Double,
@@ -45,32 +46,35 @@ class Softmax(weights: Array[Double],
     * Target "true" distribution of nClasses output values for supervised learning.
     * Use one-hot encoding: all zeroes except 1.0 for the target class.
     */
-  private val target: Array[Array[Double]] = Array.fill(batchSize)(new Array[Double](nClasses))
+  private[softmax] val target: Array[Array[Double]] = Array.fill(batchSize)(new Array[Double](nClasses))
 
   /** current examples batch input[m][nInputs] */
-  private val input: Array[Array[Double]] = Array.fill(batchSize)(new Array[Double](nInputs))
+  private[softmax] val input: Array[Array[Double]] = Array.fill(batchSize)(new Array[Double](nInputs))
 
   /** lineOut[m][nClasses]: output of the first level linear predictor before the softmax layer */
-  private val lineOut: Array[Array[Double]] = Array.fill(batchSize)(new Array[Double](nClasses))
+  private[softmax] val lineOut: Array[Array[Double]] = Array.fill(batchSize)(new Array[Double](nClasses))
 
   /** predicted[m][nClasses] = predict(input) */
-  private val predicted: Array[Array[Double]] = Array.fill(batchSize)(new Array[Double](nClasses))
+  private[softmax] val predicted: Array[Array[Double]] = Array.fill(batchSize)(new Array[Double](nClasses))
 
   /** gradients of the loss function */
-  private val gradients: Array[Array[Double]] = Array.fill(nClasses)(new Array[Double](nInputs))
+  private[softmax] val gradients: Array[Array[Double]] = Array.fill(nClasses)(new Array[Double](nInputs))
 
   /**
     * y = softmax(x) = normalize(exp(x)) = exp(x(i)) / sum (exp(x))
     *
     * Naive "by the book" version; only works with normalized, stable input.
+    *
+    * @param idx The index of the currently processed example from the mini-batch.
+    *            Used to save memory by writing the result directly to predicted(idx).
     */
-  def softmax(x: Array[Double]): Array[Double] = {
+  def softmax(x: Array[Double], idx: Int): Array[Double] = {
     val n = x.length
     var i = 0
-    val y = new Array[Double](n)
+    val y = predicted(idx)
     var sum: Double = 0.0
     while (i < n) {
-      y(i) = math.exp(x(i)).toFloat
+      y(i) = math.exp(x(i))
       sum += y(i)
       i += 1
     }
@@ -89,12 +93,15 @@ class Softmax(weights: Array[Double],
     *
     * Stable form: y(i) = exp( x(i) - logSumExp(x) )
     *   where logSumExp(x) = max(x) + log(sum(x-max(x)))
+    *
+    * @param idx The index of the currently processed example from the mini-batch.
+    *            Used to save memory by writing the result directly to predicted(idx).
     */
-  def softmaxStable(x: Array[Double]): Array[Double] = {
-    val xMax = x.max  // for logSumExp
+  def softmaxStable(x: Array[Double], idx: Int): Array[Double] = {
+    val xMax = ArrayOp.max(x)  // for logSumExp
     val n = x.length
     var i = 0
-    val y = new Array[Double](n)
+    val y = predicted(idx)
     var sum: Double = 0.0
     while (i < n) {
       sum += x(i) - xMax  // for logSumExp
@@ -102,14 +109,15 @@ class Softmax(weights: Array[Double],
     }
     val logSum1 = math.log(sum)
     // Underflow is okay here; we can treat a very small number as zero
-    val logSum2 = if (logSum1.isNaN) 0.0 else logSum1
+    val logSum2 = if (java.lang.Double.isNaN(logSum1)) 0.0 else logSum1
     val logSumExp = xMax + logSum2
     i = 0
     while (i < n) {
       val yi = math.exp(x(i) - logSumExp)
       // Underflow is okay here; with our formula we get at least one y(i) = 1;
       // other small values can be a "very small probability".
-      y(i) = if (yi < VerySmallProbability || yi.isNaN) VerySmallProbability else yi
+      y(i) = if (yi < VerySmallProbability || java.lang.Double.isNaN(yi)) VerySmallProbability
+             else yi
       i += 1
     }
     y
@@ -144,7 +152,7 @@ class Softmax(weights: Array[Double],
   private def predictBatch(xs: Traversable[(Array[Double], Array[Double])]): Unit = {
     var i = 0
     while (i < m) {
-      xs.map(x => predict(x._1, i))
+      xs.foreach(x => predict(x._1, i))
       i += 1
     }
   }
@@ -159,7 +167,7 @@ class Softmax(weights: Array[Double],
   private def predictWithBias(idx: Int): Array[Double] = {
     input(idx)(inputDataLength) = 1.0  // constant pseudo-input for simplified handling of bias
     lineOut(idx) = MatrixOp.mulMatrixByColumnDouble(weights, input(idx), nClasses, nInputs)
-    predicted(idx) = if (useStable) softmaxStable(lineOut(idx)) else softmax(lineOut(idx))
+    predicted(idx) = if (useStable) softmaxStable(lineOut(idx), idx) else softmax(lineOut(idx), idx)
     predicted(idx)
   }
 
@@ -178,17 +186,15 @@ class Softmax(weights: Array[Double],
     *   lambda > 0 is the weight decay parameter necessary for convergence.
     */
   def gradientsOfLoss(): Unit = {
-
-    val sum = new Array[Double](nInputs)
     var j = 0
     while (j < nClasses) {
       val rowOffset = j * nInputs
-      gradients(j) = weights.slice(rowOffset, rowOffset + nInputs)  // 1 * w(j) so far
 
       var k = 0
+      val gradJ = gradients(j)
       while (k < nInputs) {
-        gradients(j)(k) = Softmax.Lambda * gradients(j)(k)  // completing the lambda * w(j) part
-        sum(k) = 0.0
+        gradJ(k) = Softmax.Lambda * weights(rowOffset + k)  // gradients(j) = lambda * w(j) part
+        partialGradSum(k) = 0.0
         k += 1
       }
 
@@ -197,7 +203,7 @@ class Softmax(weights: Array[Double],
         val diff = target(i)(j) - predicted(i)(j)
         k = 0
         while (k < nInputs) {
-          sum(k) += input(i)(k) * diff
+          partialGradSum(k) += input(i)(k) * diff
           k += 1
         }
         i += 1
@@ -205,26 +211,44 @@ class Softmax(weights: Array[Double],
 
       k = 0
       while (k < nInputs) {
-        gradients(j)(k) -= sum(k) / m
+        gradJ(k) -= partialGradSum(k) / m
         k += 1
       }
 
       j += 1
     }
   }
+  private val partialGradSum = new Array[Double](nInputs)
 
-  /** Loss (cost) function. Only used for debugging, so no priority to optimize. See ref. */
+  /** Loss (cost) function. Used for tracking progress and stopping at a minimum. See ref. */
   private def lossFunction = {
-    val weightDecay = weights.map(x => x * x).sum
-    val logLoss = - (for {
-      i <- 0 until m
-      j <- 0 until nClasses
-    } yield {
-      val logPredicted1 = math.log(predicted(i)(j))
-      val logPredicted2 = if (logPredicted1.isNegInfinity) Double.MinValue else logPredicted1
-      target(i)(j) * logPredicted2
-    })
-      .sum / m
+    var weightDecay = 0.0
+    var i = 0
+    val n = weights.length
+    while (i < n) {
+      val x = weights(i)
+      weightDecay += x * x
+      i += 1
+    }
+
+    var logLoss = 0.0
+    i = 0
+    var j = 0
+    while (i < m) {
+      val predI = predicted(i)
+      val targetI = target(i)
+      while (j < nClasses) {
+        val logPredicted1 = math.log(predI(j))
+        val logPredicted2 = if (Double.NegativeInfinity == logPredicted1) Double.MinValue
+                            else logPredicted1
+        logLoss -= targetI(j) * logPredicted2
+
+        j += 1
+      }
+      i += 1
+    }
+    logLoss /= m
+
     logLoss + weightDecay
   }
 
@@ -236,10 +260,11 @@ class Softmax(weights: Array[Double],
     var j = 0
     while (i < nClasses) {
       j = 0
+      val gradI = gradients(i)
       while (j < nInputs) {
         val rowOffset = i * nInputs
         val idx = rowOffset + j
-        val gradElem = gradients(i)(j)
+        val gradElem = gradI(j)
         historicalGrad(idx) += gradElem * gradElem  // AdaGrad
         val adaGradLearnRate = learnRate / (Softmax.AdaGradStabilityFactor + math.sqrt(historicalGrad(idx)))
         weights(idx) -= (adaGradLearnRate * gradElem)
@@ -250,26 +275,30 @@ class Softmax(weights: Array[Double],
   }
   private val historicalGrad = new Array[Double](weights.length)
 
+  def learn(examples: Traversable[(Array[Double], Array[Double])]): Softmax = {
+    learnImpl(examples)
+    this
+  }
 
-  def learn(examples: Traversable[(Array[Double], Array[Double])]): (Softmax, Boolean) = {
+  private def learnImpl(examples: Traversable[(Array[Double], Array[Double])]): Boolean = {
     val (example, inTarget) = examples.head
     require(example.length == inputDataLength,
       s"Input length ${example.length} does not match the configured one: $inputDataLength")
     require(inTarget.length == nClasses,
       s"Target length ${inTarget.length} does not match the configured number of classes: $nClasses")
 
-    m = examples.size  // it is not just for the loop, we will need it often
+    this.m = examples.size
+
     var i = 0
-    val ex = examples.toIterator
-    while (i < m) {
-      target(i) = ex.next._2
+    examples.foreach { ex =>
+      target(i) = ex._2
       i += 1
     }
 
     predictBatch(examples)
 
     gradientsOfLoss()
-    logger.trace("Gradients: \n" + gradients.map(_.mkString(", ")).mkString("\n"))
+    // logger.trace("Gradients: \n" + gradients.map(_.mkString(", ")).mkString("\n"))
 
     val currentLoss = lossFunction
 
@@ -281,15 +310,14 @@ class Softmax(weights: Array[Double],
       iterationsSinceLastImprovement += 1
     }
     updateWeights()
-    logger.trace("Updated weights: \n" + weights.grouped(nInputs).map(_.mkString(", ")).mkString("\n"))
+    // logger.trace("Updated weights: \n" + weights.grouped(nInputs).map(_.mkString(", ")).mkString("\n"))
 
     val shouldStop = iterationsSinceLastImprovement > stuckIterationLimit
     if (shouldStop) {
-      logger.debug(s"No improvement in the last ${stuckIterationLimit} iterations," +
+      logger.debug(s"No improvement in the last $stuckIterationLimit iterations," +
                    s" terminating early. Loss function: $currentLoss")
     }
-
-    (this, shouldStop)
+    shouldStop
   }
 
   private var minLoss = Double.PositiveInfinity
@@ -299,7 +327,7 @@ class Softmax(weights: Array[Double],
     * Convenience shortcut for feeding a sequence of examples,
     * splitting it into suitable batches.
     */
-  def learnSeq(examples: Iterable[(Array[Double], Array[Double])]): Softmax = {
+  def learnSeq(examples: Traversable[(Array[Double], Array[Double])]): Softmax = {
     minLoss = Double.PositiveInfinity
 
     var i = 0
@@ -310,11 +338,16 @@ class Softmax(weights: Array[Double],
     }
 
     logger.info(s"Learning the training set: ${examples.size} entries")
-    examples.grouped(batchSize).foldLeft(this) { (acc, ex) =>
-      val (learned, shouldStop) = acc.learn(ex)
+    val nTotal = examples.size
+    i = 0
+    while (i < nTotal) {
+      val until = math.min(nTotal, i + batchSize)
+      val shouldStop = learnImpl(examples.view(i, until))
       if (shouldStop) return this
-      else learned
+      i += batchSize
     }
+
+    this
   }
 }
 object Softmax {
