@@ -5,26 +5,22 @@
 <img align="right" src="img/swiftlearner.jpg" alt="Swift Learner"/>
 
 These are some simply written machine learning algorithms.
-I wrote them as a learning exercise. They are easier to follow than the optimized libraries,
-and easier to tweak if you want to experiment.
-
-Unlike some established frameworks, SwiftLearner does not force a data model or data flow on you, it uses plain Java types.
-It is easy to fork it or copy-paste individual methods and tweak to your liking. They have few or no dependencies.
+They are easier to follow than the optimized libraries, and easier to tweak if you want to experiment.
+They use plain Java types and have few or no dependencies. SwiftLearner is easy to fork;
+you can also copy-paste the individual methods.
 
 Some of the methods are very short, thanks to the elegance of the classic algorithms,
-and the expressive power of Scala. Some are optimized slightly, just enough to accommodate the test data sets.
+and the expressive power of Scala. Some are optimized slightly, just enough to accommodate the test datasets.
 Those are not idiomatic Scala, closer to CS 101 while loops, which are longer, but perform better.
-They are still easy to follow, no black magic there.
+They are still easy to follow.
 
 Use this project as a prototyping library, a cookbook, or a cheat sheet.
 For high performance and rich features, there are better options.
-Still, these methods are fully functional and work well for small problem sizes.
+Still, these methods are fully functional and work well for small datasets.
 
 The name comes from Fallout, the greatest game ever. Fallout is a trademark of Bethesda Softworks LLC.
-I hope this minor borrowing of artwork in an unrelated field qualifies as fair use and free advertising.
 
-To make one ML enthusiast happy, **please star or fork this project,**
-or leave a comment in the chat. ;)
+To make one ML enthusiast happy, **please star or fork this project.**
 
 ## Contents
 
