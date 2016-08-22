@@ -1,6 +1,6 @@
 # SwiftLearner: Scala machine learning library
 
-[![Build Status](https://travis-ci.org/valdanylchuk/swiftlearner.svg?branch=master)](https://travis-ci.org/valdanylchuk/swiftlearner) [![Join the chat at https://gitter.im/valdanylchuk/swiftlearner](https://badges.gitter.im/valdanylchuk/swiftlearner.svg)](https://gitter.im/valdanylchuk/swiftlearner?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Maven Central](https://img.shields.io/maven-central/v/com.danylchuk/swiftlearner_2.11.svg?label=maven%20central)](http://search.maven.org/#artifactdetails%7Ccom.danylchuk%7Cswiftlearner_2.11%7C)
+[![Build Status](https://travis-ci.org/valdanylchuk/swiftlearner.svg?branch=master)](https://travis-ci.org/valdanylchuk/swiftlearner) [![Join the chat at https://gitter.im/valdanylchuk/swiftlearner](https://badges.gitter.im/valdanylchuk/swiftlearner.svg)](https://gitter.im/valdanylchuk/swiftlearner?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Maven Central](https://img.shields.io/maven-central/v/com.danylchuk/swiftlearner_2.11.svg?label=maven%20central)](http://search.maven.org/#search%7Cga%7C1%7Cg%3Acom.danylchuk%20a%3Aswiftlearner_2.11)
 
 <img align="right" src="img/swiftlearner.jpg" alt="Swift Learner"/>
 
