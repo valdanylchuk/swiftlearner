@@ -50,6 +50,8 @@ Softmax (multinomial logistic) regression with SGD and AdaGrad.
 
 The examples I wrote so far are small enough to fit in the tests, so take a look there.
 
+### Fisher iris flowers dataset
+
 <img align="right" src="img/iris-virginica.jpg" alt="Iris Virginica flower; credit: Wikimedia Commons"/>
 
 One example is classifying the classic
@@ -65,12 +67,44 @@ with different algorithms:
 The accuracy for backprop and the genetic algorithm goes higher with longer training;
 these figures are for the quick settings in the automated tests.
 
+### MNIST handwritten digits
+
 <img align="right" src="img/mnist-handwritten-digits.jpg" alt="MNIST handwritten digits"/>
 
 Another classic example is classifying the handwritten digits from the
 [MNIST database](https://en.wikipedia.org/wiki/MNIST_database):
 * [SoftmaxClassifier](src/test/scala/com/danylchuk/swiftlearner/softmax/SoftmaxTest.scala): 92% accuracy
 * [BackpropClassifier](src/test/scala/com/danylchuk/swiftlearner/nn/backprop/BackpropClassifierTest.scala): 95% accuracy
+
+### Hotel recommendation
+
+<img align="right" src="img/swiftlearner.jpg" alt="Swift Learner"/>
+
+This is based on [Expedia hotel recommendations competition on Kaggle](https://www.kaggle.com/c/expedia-hotel-recommendations)
+
+I have extracted a subset of the fields and data rows to test with NN/Backprop.
+This is not a full solution, only a small technical demo:
+
+[SwiftLearner hotels example](examples/hotels)
+
+SwiftLearner backprop classifier scales fine to thousands
+of inputs and millions of examples. The prediction accuracy achieved so far is 0.058, which
+is nothing spectacular, but certainly an evidence of some learning, compared
+to a random guess at 0.01.
+
+## Setup
+
+Add the following line to your build.sbt:
+```
+libraryDependencies += "com.danylchuk" %% "swiftlearner" % "0.2.0"
+```
+
+Publishing to Maven Central is in progress. For now, you can publish locally:
+```
+git clone git@github.com:valdanylchuk/swiftlearner.git
+cd swiftlearner
+sbt publish-local
+```
 
 ## License
 
