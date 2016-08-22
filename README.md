@@ -1,7 +1,6 @@
 # SwiftLearner: Scala machine learning library
 
-[![Build Status](https://travis-ci.org/valdanylchuk/swiftlearner.svg?branch=master)](https://travis-ci.org/valdanylchuk/swiftlearner) [![Join the chat at https://gitter.im/valdanylchuk/swiftlearner](https://badges.gitter.im/valdanylchuk/swiftlearner.svg)](https://gitter.im/valdanylchuk/swiftlearner?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
+[![Build Status](https://travis-ci.org/valdanylchuk/swiftlearner.svg?branch=master)](https://travis-ci.org/valdanylchuk/swiftlearner) [![Join the chat at https://gitter.im/valdanylchuk/swiftlearner](https://badges.gitter.im/valdanylchuk/swiftlearner.svg)](https://gitter.im/valdanylchuk/swiftlearner?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Maven Central](https://img.shields.io/maven-central/v/com.danylchuk/swiftlearner_2.11.svg?label=maven%20central")](http://search.maven.org/%23artifactdetails%7Ccom.danylchuk%7Cswiftlearner_2.11%7C)
 <img align="right" src="img/swiftlearner.jpg" alt="Swift Learner"/>
 
 These are some simply written machine learning algorithms.
@@ -20,7 +19,7 @@ Still, these methods are fully functional and work well for small datasets.
 
 The name comes from Fallout, the greatest game ever. Fallout is a trademark of Bethesda Softworks LLC.
 
-To make one ML enthusiast happy, **please star or fork this project.**
+To make one ML enthusiast happy, **please star or fork this project ;)**
 
 ## Contents
 
@@ -48,7 +47,7 @@ Softmax (multinomial logistic) regression with SGD and AdaGrad.
 
 ## Examples
 
-The examples I wrote so far are small enough to fit in the tests, so take a look there.
+Most of the examples I wrote so far are small enough to fit in the tests, so take a look there.
 
 ### Fisher iris flowers dataset
 
@@ -97,13 +96,6 @@ Another classic example is classifying the handwritten digits from the
 Add the following line to your build.sbt:
 ```
 libraryDependencies += "com.danylchuk" %% "swiftlearner" % "0.2.0"
-```
-
-Publishing to Maven Central is in progress. For now, you can publish locally:
-```
-git clone git@github.com:valdanylchuk/swiftlearner.git
-cd swiftlearner
-sbt publish-local
 ```
 
 ## License
