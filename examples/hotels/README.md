@@ -1,6 +1,6 @@
 # SwiftLearner hotel recommendations example
 
-<img align="right" src="img/swiftlearner.jpg" alt="Swift Learner"/>
+<img align="right" src="img/hotel.jpg" alt="Hotel"/>
 
 This is based on [Expedia hotel recommendations competition on Kaggle](https://www.kaggle.com/c/expedia-hotel-recommendations)
 

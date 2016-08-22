@@ -67,18 +67,9 @@ with different algorithms:
 The accuracy for backprop and the genetic algorithm goes higher with longer training;
 these figures are for the quick settings in the automated tests.
 
-### MNIST handwritten digits
-
-<img align="right" src="img/mnist-handwritten-digits.jpg" alt="MNIST handwritten digits"/>
-
-Another classic example is classifying the handwritten digits from the
-[MNIST database](https://en.wikipedia.org/wiki/MNIST_database):
-* [SoftmaxClassifier](src/test/scala/com/danylchuk/swiftlearner/softmax/SoftmaxTest.scala): 92% accuracy
-* [BackpropClassifier](src/test/scala/com/danylchuk/swiftlearner/nn/backprop/BackpropClassifierTest.scala): 95% accuracy
-
 ### Hotel recommendation
 
-<img align="right" src="img/swiftlearner.jpg" alt="Swift Learner"/>
+<img align="right" src="examples/hotels/img/hotel.jpg" alt="Hotel"/>
 
 This is based on [Expedia hotel recommendations competition on Kaggle](https://www.kaggle.com/c/expedia-hotel-recommendations)
 
@@ -91,6 +82,15 @@ SwiftLearner backprop classifier scales fine to thousands
 of inputs and millions of examples. The prediction accuracy achieved so far is 0.058, which
 is nothing spectacular, but certainly an evidence of some learning, compared
 to a random guess at 0.01.
+
+### MNIST handwritten digits
+
+<img align="right" src="img/mnist-handwritten-digits.jpg" alt="MNIST handwritten digits"/>
+
+Another classic example is classifying the handwritten digits from the
+[MNIST database](https://en.wikipedia.org/wiki/MNIST_database):
+* [SoftmaxClassifier](src/test/scala/com/danylchuk/swiftlearner/softmax/SoftmaxTest.scala): 92% accuracy
+* [BackpropClassifier](src/test/scala/com/danylchuk/swiftlearner/nn/backprop/BackpropClassifierTest.scala): 95% accuracy
 
 ## Setup
 
