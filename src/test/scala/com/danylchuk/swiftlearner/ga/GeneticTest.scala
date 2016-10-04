@@ -6,16 +6,16 @@ import org.specs2.mutable.Specification
 class GeneticTest extends Specification {
   "Genetic algorithm" should {
     "solve the Hello World example" >> {
-      val result = new Genetic[HelloGenetic, String](50, 10).optimize(100, 30000L)
-      result.genomeVal must_== HelloGenetic.Hello
+      val result = new Genetic[HelloGenetic](50, 10).optimize(100, 30000L)
+      result.genome must_== HelloGenetic.HelloDouble
       result.fitness must_== 0
     }
 
     "sort the flowers from the Fisher Iris dataset" >> {
       val testSet = GeneticIris.testSet
 
-      val classifier = new Genetic[GeneticIris, Seq[Double]](100, 10)
-        .optimize(200, 60000L).genomeVal
+      val classifier = new Genetic[GeneticIris](100, 10)
+        .optimize(200, 60000L).genome
 
       val accuracy = (for ((species, params) <- testSet) yield {
         GeneticIris.predict(classifier, params) == species

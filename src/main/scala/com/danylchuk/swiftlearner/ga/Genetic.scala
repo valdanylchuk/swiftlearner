@@ -9,9 +9,9 @@ import scala.reflect.ClassTag
   * Ref.: https://en.wikipedia.org/wiki/Genetic_algorithm
   * http://www.theprojectspot.com/tutorial-post/creating-a-genetic-algorithm-for-beginners/3
   */
-class Genetic[A <: Individual[A, B] :ClassTag, B](populationSize: Int, tournamentSize: Int) {
+class Genetic[A <: Individual[A] :ClassTag](populationSize: Int, tournamentSize: Int) {
   def optimize(maxGen: Int, maxMillis: Long): A = {
-    val first = new Population[A, B](populationSize, tournamentSize)
+    val first = new Population[A](populationSize, tournamentSize)
     val start = System.currentTimeMillis
     val optPop = (0 until maxGen).foldLeft(first) { (pop, _) =>
       if (pop.getFittest.fitness == 0) pop  // Found a perfect match

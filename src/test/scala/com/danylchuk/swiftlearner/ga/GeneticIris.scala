@@ -13,35 +13,30 @@ import scala.util.Random
   *
   * Ref.: http://www.electricmonk.nl/log/2011/09/28/evolutionary-algorithm-evolving-hello-world/
   */
-class GeneticIris(override val genome: Option[Seq[Double]]) extends Individual[GeneticIris, Seq[Double]] {
-  val genomeVal = genome.get
-
+class GeneticIris(override val genome: Vector[Double]) extends Individual[GeneticIris] {
   /** Random default constructor */
-  def this() = this(Some(Seq.fill(GeneticIris.genomeLength)(Random.nextDouble * 6)))
+  def this() = this(Vector.fill(GeneticIris.genomeLength)(Random.nextDouble * 6))
 
   /** Fitness function: sum of differences, squared to penalize severe defects */
   override val fitness: Double = {
     val trainingSet = GeneticIris.trainingSet
     val diffs = for ((classIdx, params) <- GeneticIris.trainingSet) yield {
-      val classGenes = genomeVal.grouped(4).toVector(classIdx)
+      val classGenes = genome.grouped(4).toVector(classIdx)
       VectorOp.squaredDistance(params, classGenes.toVector)
     }
     diffs.sum
   }
 
   /** Crossover: take the head of one genome and the tail of another */
-  override def crossover(that: GeneticIris): GeneticIris = {
-    val pos = Random.nextInt(GeneticIris.genomeLength)
-    val newGenome = this.genomeVal.take(pos) ++ that.genomeVal.drop(pos)
-    new GeneticIris(Some(newGenome))
-  }
+  override def crossover(that: GeneticIris): GeneticIris =
+    new GeneticIris(crossoverAtRandomPoint(that))
 
   /** Mutate: slightly modify at a random location */
   override def mutate(): GeneticIris = {
     val pos = Random.nextInt(GeneticIris.genomeLength)
     val change = Random.nextDouble() * 0.2 + 0.9  // [-10% .. +10%]
-    val newGenome = this.genomeVal.updated(pos, this.genomeVal(pos) * change)
-    new GeneticIris(Some(newGenome))
+    val newGenome = this.genome.updated(pos, this.genome(pos) * change)
+    new GeneticIris(newGenome)
   }
 }
 object GeneticIris {
@@ -60,5 +55,4 @@ object GeneticIris {
     }
     diffs.zipWithIndex.minBy(_._1)._2
   }
-
 }
