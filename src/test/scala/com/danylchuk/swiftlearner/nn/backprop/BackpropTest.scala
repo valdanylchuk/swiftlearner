@@ -76,5 +76,18 @@ class BackpropTest extends Specification with LazyLogging {
       val nn = BackpropNet.randomNet(2, 4, 1, Some(100L))
       learnAndTest(nn, XorExamples, 6000)
     }
+
+    "use memory sparingly in calculateOutput" >> skipped {
+      val net = BackpropNet.randomNet(100, 100, 100)
+      val input = Array.tabulate(100)(_.toFloat)
+
+      val before = Runtime.getRuntime.freeMemory
+
+      for (i <- 0 to 100000)
+        net.calculateOutput(input)
+
+      val after = Runtime.getRuntime.freeMemory
+      (before - after) must be_<(20 * 1000000L)  // 6-12M usual value; room for improvement
+    }
   }
 }

@@ -21,7 +21,7 @@ class GeneticIris(override val genome: Vector[Double]) extends Individual[Geneti
   override val fitness: Double = {
     val trainingSet = GeneticIris.trainingSet
     val diffs = for ((classIdx, params) <- GeneticIris.trainingSet) yield {
-      val classGenes = genome.grouped(4).toVector(classIdx)
+      val classGenes = genome.grouped(4).toVector(classIdx)  // hotspot 35%, not critical
       VectorOp.squaredDistance(params, classGenes.toVector)
     }
     diffs.sum

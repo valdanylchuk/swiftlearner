@@ -17,5 +17,17 @@ class ArrayOpTest extends Specification {
       ArrayOp.indexOfMax(v2) must_== 2
       ArrayOp.indexOfMax(v3) must_== 0
     }
+
+    "use memory sparingly in dot" >> skipped {
+      val vector = Array.tabulate(1000)(_.toFloat)
+
+      val before = Runtime.getRuntime.freeMemory
+
+      for (i <- 0 to 1000000)
+        ArrayOp.dot(vector, vector)
+
+      val after = Runtime.getRuntime.freeMemory
+      (before - after) must be_<(10 * 1000000L)  // 4B*1M actual minimum
+    }
   }
 }
