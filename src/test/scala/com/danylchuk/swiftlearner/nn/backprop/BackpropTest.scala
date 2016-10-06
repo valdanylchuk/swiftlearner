@@ -14,6 +14,9 @@ class BackpropTest extends Specification with LazyLogging {
     }
   }
 
+  val netForMemTest = BackpropNet.randomNet(100, 100, 100)
+  val inputForMemTest = Array.tabulate(100)(_.toFloat)
+
   "BackpropNet" should {
     "reproduce the known example" >> {
       val input = Array[Float](0.35f, 0.9f)
@@ -78,16 +81,27 @@ class BackpropTest extends Specification with LazyLogging {
     }
 
     "use memory sparingly in calculateOutput" >> skipped {
-      val net = BackpropNet.randomNet(100, 100, 100)
-      val input = Array.tabulate(100)(_.toFloat)
-
       val before = Runtime.getRuntime.freeMemory
 
       for (i <- 0 to 100000)
-        net.calculateOutput(input)
+        netForMemTest.calculateOutput(inputForMemTest)
 
       val after = Runtime.getRuntime.freeMemory
-      (before - after) must be_<(20 * 1000000L)  // 6-12M usual value; room for improvement
+      (before - after) must be_<(20 * 1000000L)
+      // 6-12M usual value; room for improvement
+      // 100 bytes per iteration
+    }
+
+    "use memory sparingly in learn" >> skipped {
+      val before = Runtime.getRuntime.freeMemory
+
+      for (i <- 0 to 1000)
+        netForMemTest.learn(inputForMemTest, inputForMemTest)
+
+      val after = Runtime.getRuntime.freeMemory
+      (before - after) must be_<(10 * 1000000L)
+      // 7M usual value; quite bad
+      // 7kB per iteration
     }
   }
 }

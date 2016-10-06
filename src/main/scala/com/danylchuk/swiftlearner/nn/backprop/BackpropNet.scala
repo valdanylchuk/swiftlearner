@@ -39,7 +39,7 @@ class BackpropNet (
 
     // There is time to think in monads, and there is time to update a few billion weights.
 
-    val hiddenLayerOutput = new Array[Float](nHidden)
+    val hiddenLayerOutput = new Array[Float](nHidden)  // high allocation
     var i = 0
     while (i < nHidden) {
       hiddenLayer(i).output = hiddenLayer(i).calculateOutputFor(example)
@@ -91,8 +91,8 @@ object BackpropNet {
   def randomNet(nInput: Int, nHidden: Int, nOutput: Int, seed: Option[Long] = None) = {
     val r = new scala.util.Random()
     seed.foreach(r.setSeed)
-    val hiddenLayer = Array.fill(nHidden)(new Node(Array.fill(nInput)(r.nextFloat())))
-    val outputLayer = Array.fill(nOutput)(new Node(Array.fill(nHidden)(r.nextFloat())))
+    val hiddenLayer = Array.fill(nHidden)(Node(Array.fill(nInput)(r.nextFloat())))
+    val outputLayer = Array.fill(nOutput)(Node(Array.fill(nHidden)(r.nextFloat())))
     new BackpropNet(hiddenLayer, outputLayer)
   }
 }
