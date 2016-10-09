@@ -81,22 +81,23 @@ class BackpropTest extends Specification with LazyLogging with MemoryTesting {
       learnAndTest(nn, XorExamples, 6000)
     }
 
+    "use memory sparingly in calculateOutputFor" >> skipped {
+      val node = netForMemTest.hiddenLayer(1)
+      countAllocatedRepeat(100) {
+        node.calculateOutputFor(inputForMemTest)
+      } must_== 0L  // sometimes works; OK
+    }
+
     "use memory sparingly in calculateOutput" >> skipped {
-      val before = Runtime.getRuntime.freeMemory
-
-      for (i <- 0 to 100000)
+      countAllocatedRepeat(1000) {
         netForMemTest.calculateOutput(inputForMemTest)
-
-      val after = Runtime.getRuntime.freeMemory
-      (before - after) must be_<(20 * 1000000L)
+      } must be_<(20 * 1000000L)
       // 6-12M usual value; room for improvement
       // 100 bytes per iteration
     }
 
-    "use memory sparingly in learn" >> skipped {
-      val before = Runtime.getRuntime.freeMemory
-
-      countAllocatedRepeat(1000) {
+    "use memory sparingly in learn" >> {
+      countAllocatedRepeat(100) {
         netForMemTest.learn(inputForMemTest, inputForMemTest)
       } must_== 0L //(10 * 1000000L)
       // 30 - 1M

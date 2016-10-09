@@ -5,13 +5,12 @@ trait MemoryTesting {
   def countAllocatedRepeat(nTimes: Int)(block: => Any) = {
     synchronized {
       val before = Runtime.getRuntime.freeMemory
-
-      Iterator.range(0, nTimes).foreach { _ =>
+      var i = 0
+      while (i < nTimes) {
         block
+        i += 1
       }
-
-      val after = Runtime.getRuntime.freeMemory
-      before - after
+      before - Runtime.getRuntime.freeMemory
     }
   }
 }

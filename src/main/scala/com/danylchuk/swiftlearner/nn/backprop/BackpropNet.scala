@@ -104,7 +104,8 @@ case class Node(
   var error: Float = 0
 ) {
   /** Activation function (using the logistic function) */
-  private def f(x: Float): Float = (1.0 / (1.0 + Math.exp(-x))).toFloat
+  private def f(x: Float): Float = (1.0 / (1.0 + java.lang.Math.exp(-x))).toFloat
+//  private def f(x: Float): Float = (1.0 / (1.0 + Math.exp(-x))).toFloat
 
   /** Activation function derivative, used for learning */
   private def ff(oldOutput: Float): Float = oldOutput * (1.0f - oldOutput)
