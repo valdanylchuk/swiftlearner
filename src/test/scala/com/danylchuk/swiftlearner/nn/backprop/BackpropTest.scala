@@ -88,6 +88,13 @@ class BackpropTest extends Specification with LazyLogging with MemoryTesting {
       } must_== 0L  // sometimes works; OK
     }
 
+    "use memory sparingly in updated" >> skipped {
+      val node = netForMemTest.hiddenLayer(1)
+      countAllocatedRepeat(100) {
+        node.updated(inputForMemTest, 0.1f, 1.0f)
+      } must_== 0L  // sometimes works; OK
+    }
+
     "use memory sparingly in calculateOutput" >> skipped {
       countAllocatedRepeat(1000) {
         netForMemTest.calculateOutput(inputForMemTest)
@@ -114,7 +121,8 @@ class BackpropTest extends Specification with LazyLogging with MemoryTesting {
       // nOutput=100 times/iter: outputLayer(j).calculateOutputFor(hiddenLayerOutput): ArrayOp.dot
       // nOutput=100 times/iter: outputLayer(j).updated(hiddenLayerOutput, partialError, rate)
       // nHidden=100 times/iter: hiddenLayer(i).updated(example, partialError, rate)
-      // TODO: test calculateOutputFor and updated separately
+      // calculateOutputFor and updated are fine separately;
+      // must be a higher-level issue
     }
   }
 }
