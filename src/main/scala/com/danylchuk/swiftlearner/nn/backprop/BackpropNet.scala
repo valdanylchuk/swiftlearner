@@ -22,6 +22,8 @@ class BackpropNet (
   val nHidden = hiddenLayer.length
   val nOutput = outputLayer.length
 
+  private lazy val hiddenLayerOutput = new Array[Float](nHidden)
+
   /** Calculate the result without updating the network */
   def calculateOutput(input: Array[Float]): Array[Float] = {
     val l2Output = hiddenLayer.map(_.calculateOutputFor(input))
@@ -39,7 +41,6 @@ class BackpropNet (
 
     // There is time to think in monads, and there is time to update a few billion weights.
 
-    val hiddenLayerOutput = new Array[Float](nHidden)  // high allocation
     var i = 0
     while (i < nHidden) {
       hiddenLayer(i).output = hiddenLayer(i).calculateOutputFor(example)

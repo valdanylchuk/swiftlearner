@@ -1,11 +1,12 @@
 package com.danylchuk.swiftlearner.nn.backprop
 
+import com.danylchuk.swiftlearner.MemoryTesting
 import com.danylchuk.swiftlearner.coll.TraversableOp._
 import com.typesafe.scalalogging.LazyLogging
 import org.specs2.execute.Result
 import org.specs2.mutable.Specification
 
-class BackpropTest extends Specification with LazyLogging {
+class BackpropTest extends Specification with LazyLogging with MemoryTesting {
   def learnAndTest(nn: BackpropNet, examples: Seq[(Array[Float], Array[Float])], times: Int) = {
     val learned = nn.learnSeq(examples.repeat(times))
     Result.foreach(examples) { example =>
@@ -95,13 +96,24 @@ class BackpropTest extends Specification with LazyLogging {
     "use memory sparingly in learn" >> skipped {
       val before = Runtime.getRuntime.freeMemory
 
-      for (i <- 0 to 1000)
+      countAllocatedRepeat(1000) {
         netForMemTest.learn(inputForMemTest, inputForMemTest)
-
-      val after = Runtime.getRuntime.freeMemory
-      (before - after) must be_<(10 * 1000000L)
-      // 7M usual value; quite bad
-      // 7kB per iteration
+      } must_== 0L //(10 * 1000000L)
+      // 30 - 1M
+      // 100 - 2M
+      // 200 - 3.5M
+      // 300 - 4M
+      // 500 - 5M
+      // 700 - 5.5M
+      // 1000 - 7M
+      // 2000 - GC starts
+      // ~1.5M + 5.5k per iteration
+      // After extracting hiddenLayerOutput: 1000 - 6M
+      // nHidden=100 times/iter: hiddenLayer(i).calculateOutputFor(example): ArrayOp.dot
+      // nOutput=100 times/iter: outputLayer(j).calculateOutputFor(hiddenLayerOutput): ArrayOp.dot
+      // nOutput=100 times/iter: outputLayer(j).updated(hiddenLayerOutput, partialError, rate)
+      // nHidden=100 times/iter: hiddenLayer(i).updated(example, partialError, rate)
+      // TODO: test calculateOutputFor and updated separately
     }
   }
 }
