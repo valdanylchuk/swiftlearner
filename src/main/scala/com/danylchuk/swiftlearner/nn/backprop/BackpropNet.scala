@@ -78,9 +78,10 @@ class BackpropNet (
   def learnSeq(examples: Traversable[(Array[Float], Array[Float])],
                rate: Float = 1): BackpropNet = {
     logger.info(s"Learning the training set: ${examples.size} entries")
-    examples.foldLeft(this) { (nn, ex) =>
-      nn.learn(ex._1, ex._2, rate)
+    examples.foreach { ex =>
+      learn(ex._1, ex._2, rate)
     }
+    this
   }
 }
 object BackpropNet {

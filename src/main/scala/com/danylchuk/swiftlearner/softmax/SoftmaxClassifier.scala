@@ -51,5 +51,9 @@ class SoftmaxClassifier(
 
   val softmax = Softmax.withRandomWeights(nParams, nClasses, learnRate,
     stuckIterationLimit, randomSeed, batchSize, useStable)
-  val learned = softmax.learnSeq(examples.repeat(nTimes))
+  lazy val learned = {
+    for (_ <- Iterator.range(0, nTimes))
+      softmax.learnSeq(examples.repeat(nTimes))
+    softmax
+  }
 }

@@ -38,5 +38,9 @@ class BackpropClassifier(
   }
 
   val nn = BackpropNet.randomNet(nParams, nHidden, nClasses, seed)
-  val learned = nn.learnSeq(examples.repeat(nTimes), learnRate)
+  lazy val learned = {
+    for (_ <- Iterator.range(0, nTimes))
+      nn.learnSeq(examples, learnRate)
+    nn
+  }
 }

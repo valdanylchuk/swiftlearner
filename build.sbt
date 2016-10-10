@@ -2,7 +2,7 @@ name := "swiftlearner"
 
 organization := "com.danylchuk"
 
-version := "0.2.1"
+version := "0.2.2"
 
 scalaVersion := "2.11.8"
 
