@@ -28,10 +28,10 @@ import com.typesafe.scalalogging.LazyLogging
   * @param useStable Use a numerically stable softmax version, more tolerant to broad input ranges.
   *                  Recommended most of the time.
   */
-class Softmax(val weights: Array[Double],
+class Softmax(val weights: Array[Float],
               nClasses: Int,
               inputDataLength: Int,
-              learnRate: Double,
+              learnRate: Float,
               stuckIterationLimit: Int = 10000,
               batchSize: Int = 1,
               useStable: Boolean = true)
@@ -46,19 +46,19 @@ class Softmax(val weights: Array[Double],
     * Target "true" distribution of nClasses output values for supervised learning.
     * Use one-hot encoding: all zeroes except 1.0 for the target class.
     */
-  private[softmax] val target: Array[Array[Double]] = Array.fill(batchSize)(new Array[Double](nClasses))
+  private[softmax] val target: Array[Array[Float]] = Array.fill(batchSize)(new Array[Float](nClasses))
 
   /** current examples batch input[m][nInputs] */
-  private[softmax] val input: Array[Array[Double]] = Array.fill(batchSize)(new Array[Double](nInputs))
+  private[softmax] val input: Array[Array[Float]] = Array.fill(batchSize)(new Array[Float](nInputs))
 
   /** lineOut[m][nClasses]: output of the first level linear predictor before the softmax layer */
-  private[softmax] val lineOut: Array[Array[Double]] = Array.fill(batchSize)(new Array[Double](nClasses))
+  private[softmax] val lineOut: Array[Array[Float]] = Array.fill(batchSize)(new Array[Float](nClasses))
 
   /** predicted[m][nClasses] = predict(input) */
-  private[softmax] val predicted: Array[Array[Double]] = Array.fill(batchSize)(new Array[Double](nClasses))
+  private[softmax] val predicted: Array[Array[Float]] = Array.fill(batchSize)(new Array[Float](nClasses))
 
   /** gradients of the loss function */
-  private[softmax] val gradients: Array[Array[Double]] = Array.fill(nClasses)(new Array[Double](nInputs))
+  private[softmax] val gradients: Array[Array[Float]] = Array.fill(nClasses)(new Array[Float](nInputs))
 
   /**
     * y = softmax(x) = normalize(exp(x)) = exp(x(i)) / sum (exp(x))
@@ -68,13 +68,13 @@ class Softmax(val weights: Array[Double],
     * @param idx The index of the currently processed example from the mini-batch.
     *            Used to save memory by writing the result directly to predicted(idx).
     */
-  def softmax(x: Array[Double], idx: Int): Array[Double] = {
+  def softmax(x: Array[Float], idx: Int): Array[Float] = {
     val n = x.length
     var i = 0
     val y = predicted(idx)
-    var sum: Double = 0.0
+    var sum: Float = 0.0f
     while (i < n) {
-      y(i) = math.exp(x(i))
+      y(i) = math.exp(x(i)).toFloat
       sum += y(i)
       i += 1
     }
@@ -97,35 +97,35 @@ class Softmax(val weights: Array[Double],
     * @param idx The index of the currently processed example from the mini-batch.
     *            Used to save memory by writing the result directly to predicted(idx).
     */
-  def softmaxStable(x: Array[Double], idx: Int): Array[Double] = {
+  def softmaxStable(x: Array[Float], idx: Int): Array[Float] = {
     val xMax = ArrayOp.max(x)  // for logSumExp
     val n = x.length
     var i = 0
     val y = predicted(idx)
-    var sum: Double = 0.0
+    var sum: Float = 0.0f
     while (i < n) {
       sum += x(i) - xMax  // for logSumExp
       i += 1
     }
-    val logSum1 = math.log(sum)
+    val logSum1 = math.log(sum).toFloat
     // Underflow is okay here; we can treat a very small number as zero
-    val logSum2 = if (java.lang.Double.isNaN(logSum1)) 0.0 else logSum1
+    val logSum2 = if (java.lang.Float.isNaN(logSum1)) 0.0 else logSum1
     val logSumExp = xMax + logSum2
     i = 0
     while (i < n) {
-      val yi = math.exp(x(i) - logSumExp)
+      val yi = math.exp(x(i) - logSumExp).toFloat
       // Underflow is okay here; with our formula we get at least one y(i) = 1;
       // other small values can be a "very small probability".
-      y(i) = if (yi < VerySmallProbability || java.lang.Double.isNaN(yi)) VerySmallProbability
+      y(i) = if (yi < VerySmallProbability || java.lang.Float.isNaN(yi)) VerySmallProbability
              else yi
       i += 1
     }
     y
   }
-  private val VerySmallProbability = 0.0001
+  private val VerySmallProbability = 0.0001f
 
   /** Predict the likelihoods of each class given the inputs.  */
-  def predict(x: Array[Double]): Array[Double] = {
+  def predict(x: Array[Float]): Array[Float] = {
     predict(x, 0)
   }
 
@@ -134,7 +134,7 @@ class Softmax(val weights: Array[Double],
     *
     * @param idx Index within learning batch for storing the intermediate values.
     */
-  private def predict(x: Array[Double], idx: Int): Array[Double] = {
+  private def predict(x: Array[Float], idx: Int): Array[Float] = {
     require(x.length == inputDataLength, s"Input length ${x.length} does not match the configured one: $inputDataLength")
     var i = 0
     while (i < inputDataLength) {
@@ -149,7 +149,7 @@ class Softmax(val weights: Array[Double],
     *
     * TODO: Optimize the collection handling.
     **/
-  private def predictBatch(xs: Traversable[(Array[Double], Array[Double])]): Unit = {
+  private def predictBatch(xs: Traversable[(Array[Float], Array[Float])]): Unit = {
     var i = 0
     while (i < m) {
       xs.foreach(x => predict(x._1, i))
@@ -164,9 +164,9 @@ class Softmax(val weights: Array[Double],
     *
     * @param idx Index within learning batch for storing the intermediate values.
     */
-  private def predictWithBias(idx: Int): Array[Double] = {
-    input(idx)(inputDataLength) = 1.0  // constant pseudo-input for simplified handling of bias
-    lineOut(idx) = MatrixOp.mulMatrixByColumnDouble(weights, input(idx), nClasses, nInputs)
+  private def predictWithBias(idx: Int): Array[Float] = {
+    input(idx)(inputDataLength) = 1.0f  // constant pseudo-input for simplified handling of bias
+    lineOut(idx) = MatrixOp.mulMatrixByColumnFloat(weights, input(idx), nClasses, nInputs)
     predicted(idx) = if (useStable) softmaxStable(lineOut(idx), idx) else softmax(lineOut(idx), idx)
     predicted(idx)
   }
@@ -194,7 +194,7 @@ class Softmax(val weights: Array[Double],
       val gradJ = gradients(j)
       while (k < nInputs) {
         gradJ(k) = Softmax.Lambda * weights(rowOffset + k)  // gradients(j) = lambda * w(j) part
-        partialGradSum(k) = 0.0
+        partialGradSum(k) = 0.0f
         k += 1
       }
 
@@ -218,11 +218,11 @@ class Softmax(val weights: Array[Double],
       j += 1
     }
   }
-  private val partialGradSum = new Array[Double](nInputs)
+  private val partialGradSum = new Array[Float](nInputs)
 
   /** Loss (cost) function. Used for tracking progress and stopping at a minimum. See ref. */
   private def lossFunction = {
-    var weightDecay = 0.0
+    var weightDecay = 0.0f
     var i = 0
     val n = weights.length
     while (i < n) {
@@ -231,15 +231,15 @@ class Softmax(val weights: Array[Double],
       i += 1
     }
 
-    var logLoss = 0.0
+    var logLoss = 0.0f
     i = 0
     var j = 0
     while (i < m) {
       val predI = predicted(i)
       val targetI = target(i)
       while (j < nClasses) {
-        val logPredicted1 = math.log(predI(j))
-        val logPredicted2 = if (Double.NegativeInfinity == logPredicted1) Double.MinValue
+        val logPredicted1 = math.log(predI(j)).toFloat
+        val logPredicted2 = if (Float.NegativeInfinity == logPredicted1) Float.MinValue
                             else logPredicted1
         logLoss -= targetI(j) * logPredicted2
 
@@ -267,20 +267,20 @@ class Softmax(val weights: Array[Double],
         val gradElem = gradI(j)
         historicalGrad(idx) += gradElem * gradElem  // AdaGrad
         val adaGradLearnRate = learnRate / (Softmax.AdaGradStabilityFactor + math.sqrt(historicalGrad(idx)))
-        weights(idx) -= (adaGradLearnRate * gradElem)
+        weights(idx) -= (adaGradLearnRate * gradElem).toFloat
         j += 1
       }
       i += 1
     }
   }
-  private val historicalGrad = new Array[Double](weights.length)
+  private val historicalGrad = new Array[Float](weights.length)
 
-  def learn(examples: Traversable[(Array[Double], Array[Double])]): Softmax = {
+  def learn(examples: Traversable[(Array[Float], Array[Float])]): Softmax = {
     learnImpl(examples)
     this
   }
 
-  private def learnImpl(examples: Traversable[(Array[Double], Array[Double])]): Boolean = {
+  private def learnImpl(examples: Traversable[(Array[Float], Array[Float])]): Boolean = {
     val (example, inTarget) = examples.head
     require(example.length == inputDataLength,
       s"Input length ${example.length} does not match the configured one: $inputDataLength")
@@ -320,20 +320,20 @@ class Softmax(val weights: Array[Double],
     shouldStop
   }
 
-  private var minLoss = Double.PositiveInfinity
+  private var minLoss = Float.PositiveInfinity
   private var iterationsSinceLastImprovement = 0
 
   /**
     * Convenience shortcut for feeding a sequence of examples,
     * splitting it into suitable batches.
     */
-  def learnSeq(examples: Traversable[(Array[Double], Array[Double])]): Softmax = {
-    minLoss = Double.PositiveInfinity
+  def learnSeq(examples: Traversable[(Array[Float], Array[Float])]): Softmax = {
+    minLoss = Float.PositiveInfinity
 
     var i = 0
     val n = historicalGrad.length
     while (i < n) {
-      historicalGrad(i) = 0.0
+      historicalGrad(i) = 0.0f
       i += 1
     }
 
@@ -358,7 +358,7 @@ object Softmax {
     */
   def withRandomWeights(inputDataLength: Int,
                         nClasses: Int,
-                        learnRate: Double,
+                        learnRate: Float,
                         stuckIterationLimit: Int,
                         seed: Option[Long] = None,
                         batchSize: Int = 1,
@@ -366,11 +366,11 @@ object Softmax {
     val r = new scala.util.Random()
     seed.foreach(r.setSeed)
     // nInput + 1 for handling of bias (intercept)
-    val weights = Array.fill((inputDataLength + 1) * nClasses)(r.nextDouble())
+    val weights = Array.fill((inputDataLength + 1) * nClasses)(r.nextFloat())
     new Softmax(weights, nClasses, inputDataLength, learnRate,
       stuckIterationLimit, batchSize, useStable)
   }
 
-  val Lambda = 0.0001  // for convergence
+  val Lambda = 0.0001f  // for convergence
   val AdaGradStabilityFactor = 0.000001  // for numerical stability
 }

@@ -9,29 +9,29 @@ import com.danylchuk.swiftlearner.math.ArrayOp
   *
   * Assumes consecutive class indices 0..N
   *
-  * @param trainingSet A sequence of entries: (class: Int, parameters: Seq[Double])
+  * @param trainingSet A sequence of entries: (class: Int, parameters: Seq[Float])
   * @param nTimes Number of times to repeat the training sequence
   * @param normalize Optional input normalization function to speed up learning
   */
 class SoftmaxClassifier(
-  trainingSet: Seq[(Int, Seq[Double])],
+  trainingSet: Seq[(Int, Seq[Float])],
   nTimes: Int,
-  learnRate: Double = 0.001,
+  learnRate: Float = 0.001f,
   stuckIterationLimit: Int = 10000,
   batchSize: Int = 1,
-  normalize: (Double) => Double = identity,
+  normalize: (Float) => Float = identity,
   randomSeed: Option[Long] = None,
   useStable: Boolean = true
 ) {
   /** Predicts the most likely class given the parameters. */
-  def predict(parameters: Seq[Double]): Int = {
+  def predict(parameters: Seq[Float]): Int = {
     val predicted = learned.predict(normalizeSeq(parameters))
     ArrayOp.indexOfMax(predicted)
   }
 
-  private def normalizeSeq(params: Seq[Double]): Array[Double] = {
+  private def normalizeSeq(params: Seq[Float]): Array[Float] = {
     val n = params.length
-    val normalized = new Array[Double](n)
+    val normalized = new Array[Float](n)
     var i = 0
     while (i < n) {
       normalized(i) = normalize(params(i))
@@ -44,8 +44,8 @@ class SoftmaxClassifier(
   val nParams = trainingSet.head._2.size
 
   val examples = trainingSet map Function.tupled { (classIdx, params) =>
-    val targetOneHot =  Array.fill[Double](nClasses)(0.0)
-    targetOneHot(classIdx) = 1.0
+    val targetOneHot =  Array.fill[Float](nClasses)(0.0f)
+    targetOneHot(classIdx) = 1.0f
     (normalizeSeq(params), targetOneHot)
   }
 
@@ -53,7 +53,7 @@ class SoftmaxClassifier(
     stuckIterationLimit, randomSeed, batchSize, useStable)
   lazy val learned = {
     for (_ <- Iterator.range(0, nTimes))
-      softmax.learnSeq(examples.repeat(nTimes))
+      softmax.learnSeq(examples)
     softmax
   }
 }

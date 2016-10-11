@@ -50,4 +50,16 @@ object ArrayOp {
     }
     max
   }
+
+  def max(xs: Array[Float]): Float = {
+    var max = xs(0)
+    var i = 1
+    while (i < xs.length) {
+      if (xs(i) > max) {
+        max = xs(i)
+      }
+      i += 1
+    }
+    max
+  }
 }

@@ -40,7 +40,7 @@ object Mnist {
   def labeledTestIteratorDouble = testLabels.iterator zip testImagesDouble
 
   /** Convenience shortcut */
-  def trainingAndTestData(nTrainPoints: Int = TrainSetSize)
+  def trainingAndTestDataFloat(nTrainPoints: Int = TrainSetSize)
   : (Seq[(Int, Vector[Float])], Seq[(Int, Vector[Float])]) = {
     val labeledTrainSet = labeledTrainIterator take nTrainPoints
     val labeledTestSet = labeledTestIterator take nTrainPoints
@@ -54,11 +54,18 @@ object Mnist {
   }
 
   /** Recommended when the little extra cost is not critical. */
-  def shuffledTrainingAndTestData(nTrainPoints: Int = TrainSetSize, randomSeed: Option[Long] = None)
+  def shuffledTrainingAndTestDataDouble(nTrainPoints: Int = TrainSetSize, randomSeed: Option[Long] = None)
   : (Seq[(Int, Vector[Double])], Seq[(Int, Vector[Double])]) = {
     val r = new scala.util.Random()
     randomSeed.foreach(r.setSeed)
     val (labeledTrainSet, labeledTestSet) = trainingAndTestDataDouble(nTrainPoints)
+    (r.shuffle(labeledTrainSet), labeledTestSet)
+  }
+  def shuffledTrainingAndTestDataFloat(nTrainPoints: Int = TrainSetSize, randomSeed: Option[Long] = None)
+  : (Seq[(Int, Vector[Float])], Seq[(Int, Vector[Float])]) = {
+    val r = new scala.util.Random()
+    randomSeed.foreach(r.setSeed)
+    val (labeledTrainSet, labeledTestSet) = trainingAndTestDataFloat(nTrainPoints)
     (r.shuffle(labeledTrainSet), labeledTestSet)
   }
 

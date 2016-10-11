@@ -29,7 +29,7 @@ class BackpropClassifierTest extends Specification with LazyLogging {
       val learnRate = 1.0f
       val expectedAccuracy = 0.9  // 0.95 with nRepeat=20
 
-      val (trainingSet, testSet) = Mnist.trainingAndTestData()
+      val (trainingSet, testSet) = Mnist.trainingAndTestDataFloat()
 
       val start = System.currentTimeMillis
 
