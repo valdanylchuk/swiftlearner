@@ -85,26 +85,32 @@ class BackpropTest extends Specification with LazyLogging with MemoryTesting {
       val node = netForMemTest.hiddenLayer(1)
       countAllocatedRepeat(100) {
         node.calculateOutputFor(inputForMemTest)
-      } must_== 0L  // sometimes succeeds; OK
+      } must_== 0L  // passes
     }
 
     "use memory sparingly in updated" >> skipped {
       val node = netForMemTest.hiddenLayer(1)
       countAllocatedRepeat(100) {
         node.updated(inputForMemTest, 0.1f, 1.0f)
-      } must_== 0L  // sometimes succeeds; OK
+      } must_== 0L  // passes
     }
 
     "use memory sparingly in calculateOutput" >> skipped {
       countAllocatedRepeat(5) {
         netForMemTest.calculateOutput(inputForMemTest)
-      } must_== 0L  // sometimes succeeds; OK
+      } must_== 0L  // passes
+    }
+
+    "use memory sparingly in predict" >> skipped {
+      countAllocatedRepeat(2) {
+        netForMemTest.predict(inputForMemTest)
+      } must_== 0L  // passes
     }
 
     "use memory sparingly in learn" >> skipped {
       countAllocatedRepeat(1) {
         netForMemTest.learn(inputForMemTest, inputForMemTest)
-      } must_== 0L  // sometimes succeeds; OK
+      } must_== 0L  // passes
     }
 
     "use memory sparingly in learnSeq" >> skipped {

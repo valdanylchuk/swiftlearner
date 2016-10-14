@@ -5,19 +5,6 @@ import org.specs2.mutable.Specification
 
 
 class ArrayOpTest extends Specification with MemoryTesting {
-
-  def dot(a: Array[Float], b: Array[Float]): Float = {
-    //require(a.length == b.length, "array size mismatch")
-    val n = a.length
-    var sum: Float = 0f
-    var i = 0
-    while (i < n) {
-      sum += a(i) * b(i)
-      i += 1
-    }
-    sum
-  }
-
   "ArrayOp" should {
     "calculate dot product of two vectors" >> {
       ArrayOp.dot(Array(2.0f, 3.0f), Array(4.0f, 5.0f)) must_== 2 * 4 + 3 * 5
@@ -35,8 +22,8 @@ class ArrayOpTest extends Specification with MemoryTesting {
     "use memory sparingly in dot" >> skipped {
       val vector = Array.tabulate(100)(_.toFloat)
       countAllocatedRepeat(1000) {
-        dot(vector, vector)
-      } must_== 0L  // usually works; OK
+        ArrayOp.dot(vector, vector)
+      } must_== 0L  // passes
     }
   }
 }

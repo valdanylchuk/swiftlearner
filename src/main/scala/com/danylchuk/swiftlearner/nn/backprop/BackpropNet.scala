@@ -22,12 +22,34 @@ class BackpropNet (
   val nHidden = hiddenLayer.length
   val nOutput = outputLayer.length
 
-  private lazy val hiddenLayerOutput = new Array[Float](nHidden)
+  private val hiddenLayerOutput = new Array[Float](nHidden)
 
   /** Calculate the result without updating the network */
   def calculateOutput(input: Array[Float]): Array[Float] = {
     val l2Output = hiddenLayer.map(_.calculateOutputFor(input))
     outputLayer.map(_.calculateOutputFor(l2Output))
+  }
+
+  /** @return Index of the highest output */
+  def predict(input: Array[Float]): Int = {
+    var i = 0
+    while (i < nHidden) {
+      hiddenLayerOutput(i) = hiddenLayer(i).calculateOutputFor(input)
+      i += 1
+    }
+
+    var maxOutput = Float.MinValue
+    var maxOutputIndex = 0
+    i = 0
+    while (i < nOutput) {
+      val nodeOutput = outputLayer(i).calculateOutputFor(hiddenLayerOutput)
+      if (nodeOutput > maxOutput) {
+        maxOutput = nodeOutput
+        maxOutputIndex = i
+      }
+      i += 1
+    }
+    maxOutputIndex
   }
 
   /**
@@ -38,8 +60,6 @@ class BackpropNet (
     **/
   def learn(example: Array[Float], target: Array[Float], rate: Float = 1): BackpropNet = {
     require(rate <= 1 && rate > 0, "learning rate must be between 0 and 1")
-
-    // There is time to think in monads, and there is time to update a few billion weights.
 
     var i = 0
     while (i < nHidden) {
@@ -100,13 +120,12 @@ object BackpropNet {
 }
 
 case class Node(
-  weights: Array[Float],
+  weights: Array[Float],  // n = size of the previous layer
   var output: Float = 0,
   var error: Float = 0
 ) {
   /** Activation function (using the logistic function) */
-  private def f(x: Float): Float = (1.0 / (1.0 + java.lang.Math.exp(-x))).toFloat
-//  private def f(x: Float): Float = (1.0 / (1.0 + Math.exp(-x))).toFloat
+  private def f(x: Float): Float = (1.0 / (1.0 + Math.exp(-x))).toFloat
 
   /** Activation function derivative, used for learning */
   private def ff(oldOutput: Float): Float = oldOutput * (1.0f - oldOutput)

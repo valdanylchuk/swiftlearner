@@ -1,7 +1,5 @@
 package com.danylchuk.swiftlearner.nn.backprop
 
-import com.danylchuk.swiftlearner.coll.TraversableOp._
-
 
 /**
   * A convenience shortcut for applying BackpropNet to classification problems.
@@ -21,15 +19,22 @@ class BackpropClassifier(
   normalize: (Float) => Float = identity,
   seed: Option[Long] = None
 ) {
+  val nClasses = trainingSet.iterator.map(_._1).max + 1
+  val nParams = trainingSet.head._2.size
+
+  private val normalizedInput = new Array[Float](nParams)
+
   /** Predicts the most likely class given the parameters. */
   def predict(parameters: Seq[Float]): Int = {
-    val predicted = learned.calculateOutput(Array(parameters.map(normalize): _*))
-    predicted.indexOf(predicted.max)
-    // ArrayOp.indexOfMax(learned.calculateOutput(Array(parameters.map(normalize): _*)))
+    require(parameters.size == nParams, "wrong number of parameters")
+    val iter = parameters.iterator
+    var i = 0
+    while (i < nParams) {
+      normalizedInput(i) = normalize(iter.next)
+      i += 1
+    }
+    learned.predict(normalizedInput)
   }
-
-  val nClasses = trainingSet.map(_._1).max + 1
-  val nParams = trainingSet.head._2.size
 
   val examples = trainingSet map Function.tupled { (classIdx, params) =>
     val targetOneHot =  Array.fill[Float](nClasses)(0.0f)
