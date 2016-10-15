@@ -25,23 +25,25 @@ class SoftmaxClassifier(
 ) {
   /** Predicts the most likely class given the parameters. */
   def predict(parameters: Seq[Float]): Int = {
-    val predicted = learned.predict(normalizeSeq(parameters))
+    val predicted = learned.predict(normalizeSeq(parameters, normalizedInput))
     ArrayOp.indexOfMax(predicted)
   }
 
-  private def normalizeSeq(params: Seq[Float]): Array[Float] = {
-    val n = params.length
-    val normalized = new Array[Float](n)
+  val nClasses = trainingSet.iterator.map(_._1).max + 1
+  val nParams = trainingSet.head._2.size
+
+  private val normalizedInput = new Array[Float](nParams)
+
+  private def normalizeSeq(params: Seq[Float],
+                           outArray: Array[Float] = new Array[Float](nParams))
+  : Array[Float] = {
     var i = 0
-    while (i < n) {
-      normalized(i) = normalize(params(i))
+    while (i < nParams) {
+      outArray(i) = normalize(params(i))
       i += 1
     }
-    normalized
+    outArray
   }
-
-  val nClasses = trainingSet.map(_._1).max + 1
-  val nParams = trainingSet.head._2.size
 
   val examples = trainingSet map Function.tupled { (classIdx, params) =>
     val targetOneHot =  Array.fill[Float](nClasses)(0.0f)
