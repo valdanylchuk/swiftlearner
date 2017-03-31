@@ -1,16 +1,17 @@
 package com.danylchuk.swiftlearner.math
 
+import scala.annotation.tailrec
+
 object ArrayOp {
   def dot(a: Array[Float], b: Array[Float]): Float = {
     require(a.length == b.length, "array size mismatch")
-    val n = a.length
-    var sum: Float = 0f
-    var i = 0
-    while (i < n) {
-      sum += a(i) * b(i)
-      i += 1
+
+    @tailrec def sumProducts(idx: Int, sum: Float): Float = {
+      if (idx < 0) sum
+      else sumProducts(idx - 1, sum + a(idx) * b(idx))
     }
-    sum
+
+    sumProducts(a.length - 1, 0)
   }
 
   def indexOfMax(xs: Array[Float]): Int = {
