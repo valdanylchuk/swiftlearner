@@ -36,6 +36,9 @@ Genetic Algorithm with elitist tournament selection.
 * [Gaussian Naive Bayes](src/main/scala/com/danylchuk/swiftlearner/bayes/GaussianNaiveBayes.scala)
 ([tests](src/test/scala/com/danylchuk/swiftlearner/bayes/GaussianNaiveBayesTest.scala))
 Gaussian naive Bayes classifier for continuous parameters.
+* [Bernoulli Naive Bayes](src/main/scala/com/danylchuk/swiftlearner/bayes/BernoulliNaiveBayes.scala)
+([tests](src/test/scala/com/danylchuk/swiftlearner/bayes/BernoulliNaiveBayesTest.scala))
+Bernoulli naive Bayes classifier for binary parameters.
 * [k-Nearest Neighbors](src/main/scala/com/danylchuk/swiftlearner/knn)
 ([tests](src/test/scala/com/danylchuk/swiftlearner/knn))
 k-Nearest Neighbors classifier.
@@ -91,6 +94,7 @@ Another classic example is classifying the handwritten digits from the
 [MNIST database](https://en.wikipedia.org/wiki/MNIST_database):
 * [SoftmaxClassifier](src/test/scala/com/danylchuk/swiftlearner/softmax/SoftmaxTest.scala): 92% accuracy
 * [BackpropClassifier](src/test/scala/com/danylchuk/swiftlearner/nn/backprop/BackpropClassifierTest.scala): 95% accuracy
+* [BernoulliNaiveBayes](src/test/scala/com/danylchuk/swiftlearner/bayes/BernoulliNaiveBayesTest.scala): 84% accuracy
 
 ## Setup
 
