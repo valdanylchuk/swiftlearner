@@ -94,6 +94,7 @@ Another classic example is classifying the handwritten digits from the
 [MNIST database](https://en.wikipedia.org/wiki/MNIST_database):
 * [SoftmaxClassifier](src/test/scala/com/danylchuk/swiftlearner/softmax/SoftmaxTest.scala): 92% accuracy
 * [BackpropClassifier](src/test/scala/com/danylchuk/swiftlearner/nn/backprop/BackpropClassifierTest.scala): 95% accuracy
+* [KNearestNeighbors](src/test/scala/com/danylchuk/swiftlearner/knn/KNearestNeighborsTest.scala): 89% accuracy
 * [BernoulliNaiveBayes](src/test/scala/com/danylchuk/swiftlearner/bayes/BernoulliNaiveBayesTest.scala): 84% accuracy
 
 ## Setup
