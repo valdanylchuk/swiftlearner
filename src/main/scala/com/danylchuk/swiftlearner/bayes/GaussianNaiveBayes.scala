@@ -9,6 +9,9 @@ import com.danylchuk.swiftlearner.math.Stat
   * You can create it first time with fromTrainingSet(),
   * then reuse the learned values if you like with the constructor.
   *
+  * This classifier is useful for continuous (Double) inputs.
+  * For binary inputs, use BernoulliNaiveBayes.
+  *
   * Ref: https://en.wikipedia.org/wiki/Naive_Bayes_classifier
   *      http://machinelearningmastery.com/naive-bayes-classifier-scratch-python/
   *

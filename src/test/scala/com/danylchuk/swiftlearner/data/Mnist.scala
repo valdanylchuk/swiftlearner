@@ -12,11 +12,15 @@ import com.danylchuk.swiftlearner.util
   *       https://en.wikipedia.org/wiki/MNIST_database
   */
 object Mnist {
+  private val BinaryThreshold = 127
+
   /** Training images as flattened vectors (of concatenated lines) */
   def trainImages: Iterator[Vector[Float]] =
     trainImagesByteArray.iterator.map(_.toVector.map(util.byteToUnsignedInt(_).toFloat))
   def trainImagesDouble: Iterator[Vector[Double]] =
     trainImagesByteArray.iterator.map(_.toVector.map(util.byteToUnsignedInt(_).toDouble))
+  def trainImagesBinary: Iterator[Vector[Int]] =
+    trainImagesByteArray.iterator.map(_.toVector.map(util.byteToBinary(_, BinaryThreshold)))
 
   lazy val trainImagesByteArray: Array[Array[Byte]] = readImages(trainImagesFile)
 
@@ -28,6 +32,8 @@ object Mnist {
     testImagesByteArray.iterator.map(_.toVector).map(_.map(util.byteToUnsignedInt(_).toFloat))
   def testImagesDouble: Iterator[Vector[Double]] =
     testImagesByteArray.iterator.map(_.toVector).map(_.map(util.byteToUnsignedInt(_).toDouble))
+  def testImagesBinary: Iterator[Vector[Int]] =
+    testImagesByteArray.iterator.map(_.toVector.map(util.byteToBinary(_, BinaryThreshold)))
 
   lazy val testImagesByteArray: Array[Array[Byte]] = readImages(testImagesFile)
 
@@ -36,8 +42,10 @@ object Mnist {
 
   def labeledTrainIterator = trainLabels.iterator zip trainImages
   def labeledTrainIteratorDouble = trainLabels.iterator zip trainImagesDouble
+  def labeledTrainIteratorBinary = trainLabels.iterator zip trainImagesBinary
   def labeledTestIterator = testLabels.iterator zip testImages
   def labeledTestIteratorDouble = testLabels.iterator zip testImagesDouble
+  def labeledTestIteratorBinary = testLabels.iterator zip testImagesBinary
 
   /** Convenience shortcut */
   def trainingAndTestDataFloat(nTrainPoints: Int = TrainSetSize)
@@ -50,6 +58,12 @@ object Mnist {
   : (Seq[(Int, Vector[Double])], Seq[(Int, Vector[Double])]) = {
     val labeledTrainSet = labeledTrainIteratorDouble take nTrainPoints
     val labeledTestSet = labeledTestIteratorDouble take nTrainPoints
+    (labeledTrainSet.toSeq, labeledTestSet.toSeq)
+  }
+  def trainingAndTestDataBinary(nTrainPoints: Int = TrainSetSize)
+  : (Seq[(Int, Vector[Int])], Seq[(Int, Vector[Int])]) = {
+    val labeledTrainSet = labeledTrainIteratorBinary take nTrainPoints
+    val labeledTestSet = labeledTestIteratorBinary take nTrainPoints
     (labeledTrainSet.toSeq, labeledTestSet.toSeq)
   }
 
@@ -66,6 +80,13 @@ object Mnist {
     val r = new scala.util.Random()
     randomSeed.foreach(r.setSeed)
     val (labeledTrainSet, labeledTestSet) = trainingAndTestDataFloat(nTrainPoints)
+    (r.shuffle(labeledTrainSet), labeledTestSet)
+  }
+  def shuffledTrainingAndTestDataBinary(nTrainPoints: Int = TrainSetSize, randomSeed: Option[Long] = None)
+  : (Seq[(Int, Vector[Int])], Seq[(Int, Vector[Int])]) = {
+    val r = new scala.util.Random()
+    randomSeed.foreach(r.setSeed)
+    val (labeledTrainSet, labeledTestSet) = trainingAndTestDataBinary(nTrainPoints)
     (r.shuffle(labeledTrainSet), labeledTestSet)
   }
 
