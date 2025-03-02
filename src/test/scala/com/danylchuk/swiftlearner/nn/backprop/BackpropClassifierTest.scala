@@ -41,6 +41,7 @@ class BackpropClassifierTest extends Specification with LazyLogging with MemoryT
       val mean = trainingSet.flatMap(_._2).take(10000).map(scale).sum / 10000.0f
       def normalize(x: Float): Float = scale(x) - mean // balance around 0 for stability
 
+      logger.info("mean: " + mean.toString())
       logger.info("creating the classifier")
 
       val start = System.currentTimeMillis

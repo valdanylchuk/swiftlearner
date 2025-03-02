@@ -4,10 +4,10 @@ organization := "com.danylchuk"
 
 version := "0.2.7"
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.11.12"
 
 resolvers ++= Seq(
-  "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
+  "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
 )
 
 libraryDependencies ++= Seq(

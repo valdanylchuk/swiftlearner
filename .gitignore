@@ -2,3 +2,7 @@ target/
 .idea/
 .vscode/
 .metals/
+.bloop/
+metals.sbt
+swiftlearner_cpp/build
+.DS_Store
