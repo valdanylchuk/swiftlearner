@@ -1,0 +1,25 @@
+[package]
+name = "swiftlearner_rust"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+flate2 = "1.1"
+half = "2.4"
+rand = "0.9"
+rand_mt = "5.0"
+assert_approx_eq = "1.1"
+
+[profile.dev]  # Settings for `cargo build` (debug builds)
+opt-level = 0  # No optimizations (default)
+debug = true   # Include debug symbols (default)
+
+[profile.release]  # Settings for `cargo build --release`
+opt-level = 3  # Maximum optimizations
+lto = "fat"
+debug = false  # No debug symbols (optional)
+
+[profile.test]  # Settings for `cargo test`
+opt-level = 3     # Enable optimizations for tests
+lto = "fat"
+debug = false
